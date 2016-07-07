@@ -6,11 +6,18 @@ ATM
 Compiling and flashing remotely
 
 ```sh
-$ particle flash particle_list printer
+$ particle flash <PARTICLE_NAME> <DIR>
 ```
 
 Compiling remotely and flashing locally
 
 ```sh
-$ particle compile photon printer --saveTo dist/firmware.bin
+$ particle compile photon <DIR> --saveTo dist/firmware.bin
+```
+
+## Terminal utils
+Use `netcat` to test simple server communcation
+
+```sh
+$ netcat <IP_ADDRESS> <PORT> <MESSAGE>
 ```

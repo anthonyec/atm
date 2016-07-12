@@ -1,16 +1,15 @@
 var net = require('net');
-var bytes = new Buffer([212, 332, 212, 2212, 222]);
-
+var dns = require('dns');
+var sampleBytes = require('./sample_bytes.js');
+var bytes = new Buffer(sampleBytes);
 
 var server = net.createServer(function(socket) {
-  console.log('Client connected', socket.localAddress);
   socket.write(bytes);
-
   socket.pipe(socket);
-  socket.destroy();
+  // socket.destroy();
 
   socket.on('error', function(err) {
-    if (ex.code == 'ECONNRESET') {
+    if (err.code == 'ECONNRESET') {
       console.log('Ending current session of client');
     }
   });
@@ -27,9 +26,14 @@ var server = net.createServer(function(socket) {
 
   socket.on('data', function (buffer) {
     console.log('Received data', buffer);
+    // socket.destroy();
   });
 });
 
 server.listen(2000, '0.0.0.0', function() {
-  console.log('Server started');
+  console.log('Server started on port :2000');
+});
+
+dns.lookup(require('os').hostname(), function (err, add, fam) {
+  console.log('Computer IP: ' + add);
 });

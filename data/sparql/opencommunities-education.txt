@@ -1,0 +1,37 @@
+# A query that given a postcode, returns rows of postcode, LSOA, council name and deprivation data.
+
+SELECT ?postcode ?lsoa ?councilName ?values
+WHERE {
+  # Nested selects get executed first!
+  {
+    SELECT ?lsoa ?postcode
+    WHERE {
+      VALUES ?postcode { "N7 8EP" }
+      # Find the subject where it if of type postcode unit
+      ?postcodeunit <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://data.ordnancesurvey.co.uk/ontology/postcode/PostcodeUnit> .
+
+      # Find the postcode unit which has the label ?postcode
+      ?postcodeunit <http://www.w3.org/2000/01/rdf-schema#label> ?postcode .
+
+      # For the matching postcode unit, find the connected LSOA
+      ?postcodeunit <http://opendatacommunities.org/def/ontology/admingeo/lsoa> ?lsoa .
+
+    # I don't know if there are 1 or many LSOAs per-postcode. Atm just get one.
+    } LIMIT 1
+  }
+
+  # Given the LSOA we found in the sub-query, find the subject whose refArea matches it.
+  ?values <http://opendatacommunities.org/def/ontology/geography/refArea> ?lsoa .
+
+  # That ?values object should have a combined deprivation object
+  ?values <http://opendatacommunities.org/def/ontology/communities/societal_wellbeing/imd/indices> <http://opendatacommunities.org/def/concept/general-concepts/imd/educskilltraindepriv> .
+
+  # Given the LSOA find the connected district
+  ?lsoa <http://data.ordnancesurvey.co.uk/ontology/admingeo/inDistrict> ?district .
+
+  # Given the district, find the connected council
+  ?district <http://opendatacommunities.org/def/local-government/isGovernedBy> ?council .
+
+  # Given the council, find the connected council label
+  ?council <http://www.w3.org/2000/01/rdf-schema#label> ?councilName .
+}

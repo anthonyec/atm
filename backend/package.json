@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.0.1",
     "mysql": "^2.11.1",
     "mysql2": "^1.0.0-rc.11",
+    "particle-api-js": "^6.0.4",
     "sequelize": "^3.24.1",
     "wordwrapjs": "^1.2.1"
   },

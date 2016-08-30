@@ -7,9 +7,12 @@ Adafruit_Thermal printer;
 byte server[] = { 192, 168, 55, 107 };
 int port = 2000;
 
-byte NEW_LINE = 10;
-byte LEFT_ALIGN = 15;
-byte CENTER_ALIGN = 14;
+// byte LEFT_ALIGN = 15;
+// byte CENTER_ALIGN = 14;
+// byte BOLD_ON = 15;
+// byte BOLD_OFF = 16;
+// byte UNDERLINE_ON = 17;
+// byte UNDERLINE_OFF = 18;
 
 void setup() {
   // Setup WiFi. The device can store upto 5 credentials
@@ -40,17 +43,28 @@ void loop() {
   while(client.available()) {
     byte currentByte = client.read();
 
-    if (currentByte == CENTER_ALIGN) {
-      Serial.println("Center align");
-      printer.justify('C');
-    } else if (currentByte == LEFT_ALIGN) {
-      Serial.println("Left align");
-      printer.justify('L');
-    } else {
-      Serial1.write(currentByte);
+    switch(currentByte) {
+      case 14:
+        printer.justify('C');
+        break;
+      case 15:
+        printer.justify('L');
+        break;
+      case 16:
+        printer.boldOn();
+        break;
+      case 17:
+        printer.boldOff();
+        break;
+      case 18:
+        printer.underlineOn();
+        break;
+      case 19:
+        printer.underlineOff();
+        break;
+      default:
+        Serial1.write(currentByte);
     }
-
-    Serial.println(currentByte);
   }
 
   if (!client.connected()) {

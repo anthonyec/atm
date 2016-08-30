@@ -4,7 +4,7 @@ var sampleBytes = require('./sample_bytes.js');
 var bytes = new Buffer(sampleBytes);
 
 const wrap = require('wordwrapjs');
-const text = '\x0e*****\nCenter this\n*****\n\x0fEnd the centering please';
+const text = '\x0e*****\nCenter this\n*****\n\x0fEnd the centering please.\n\x10Big bold text. \x11Big bold off.\n\nMaybe you should go to: \x12http://placeyourbets.london\x13 and have some fun on the internet.\n\n Thanks';
 const wrapped = wrap(text, {
   width: 32,
   break: true,

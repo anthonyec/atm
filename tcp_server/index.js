@@ -3,24 +3,26 @@ var dns = require('dns');
 var sampleBytes = require('./sample_bytes.js');
 var bytes = new Buffer(sampleBytes);
 
-// console.log(bytes);
+const wrap = require('wordwrapjs');
+const text = '\x0e*****\nCenter this\n*****\n\x0fEnd the centering please';
+const wrapped = wrap(text, {
+  width: 32,
+  break: true,
+});
+
+console.log(text);
+console.log(wrapped);
 
 var server = net.createServer(function(socket) {
-  socket.write(new Buffer([18, 42, 255, 384/8]));
-  socket.write(bytes);
-  socket.pipe(socket);
-  // socket.destroy();
+  // socket.write(new Buffer([133]));
+  // socket.write(new Buffer('25% of your child is obese.\n\nBut you\'re not a child anymore.\n\nLong gone are the days of strolling through the meadows, nothing to worry about but the ice cream truck leaving a little too soon today.\n\n\n\n'));
 
-  /*
-  for (int rowStart=0; rowStart < h; rowStart += 256) {
-    int chunkHeight = ((h - rowStart) > 255) ? 255 : (h - rowStart);
-    writeBytes(18, 42);
-    writeBytes(chunkHeight, w/8);
-    for (int i=0; i<((w/8)*chunkHeight); i++) {
-      PRINTER_PRINT(pgm_read_byte(bitmap + (rowStart*(w/8)) + i));
-    }
-  }
-  */
+  wrapped.split('\n').forEach((line) => {
+    socket.write(new Buffer(line));
+    socket.write(new Buffer('\n'));
+  });
+
+  socket.pipe(socket);
 
   socket.on('error', function(err) {
     if (err.code == 'ECONNRESET') {

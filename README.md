@@ -1,7 +1,6 @@
 # atm
 ATM
 
-
 ## Flashing Photon
 Compiling and flashing remotely
 
@@ -21,3 +20,21 @@ Use `netcat` to test simple server communcation
 ```sh
 $ netcat <IP_ADDRESS> <PORT> <MESSAGE>
 ```
+
+# Photon Device Modes
+
+https://docs.particle.io/guide/getting-started/modes/core/
+
+
+## Setup WiFi via USB
+
+ - Please note, the particle **can't** connect to 5GHz networks and only supports 2.4GHz
+
+```
+particle serial wifi
+```
+
+## Printer
+
+32 characters per line
+384 pixels width

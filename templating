@@ -1,0 +1,22 @@
+{{#center}}{{/center}}
+{{#bold}}{{/bold}}
+{{#underline}}{{/underline}}
+
+{{#size "large"}}{{/size}}
+{{#size "medium"}}{{/size}}
+{{#size "small"}}{{/size}}
+
+{{{image "divider"}}}
+{{{image "promotion"}}}
+
+{{> ascii/divider}}
+{{> ascii/heart}}
+
+{{{feed 5}}}
+
+Printed by: {{ robot_name }}
+Ticket number: {{ ticket_number }}
+Phone number: {{ phone_number }}
+Postcode: {{ postcode }}
+Random number: {{{ random 100 }}}
+

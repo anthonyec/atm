@@ -3,14 +3,20 @@ var dns = require('dns');
 var sampleBytes = require('./sample_bytes.js');
 var bytes = new Buffer(sampleBytes);
 
+const Handlebars = require('handlebars');
 const wrap = require('wordwrapjs');
-const text = '\x0e*****\nCenter this\n*****\n\x0fEnd the centering please.\n\x10Big bold text. \x11Big bold off.\n\nMaybe you should go to: \x12http://placeyourbets.london\x13 and have some fun on the internet.\n\n Thanks';
-const wrapped = wrap(text, {
+
+Handlebars.registerHelper('center', function(options) {
+  return '\x0e\n' + options.fn(this) + '\n\x0f';
+});
+
+const template = Handlebars.compile('{{#center}}Center me!{{/center}}');
+
+const wrapped = wrap(template(), {
   width: 32,
   break: true,
 });
 
-console.log(text);
 console.log(wrapped);
 
 var server = net.createServer(function(socket) {

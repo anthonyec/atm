@@ -4,59 +4,16 @@ var dns = require('dns');
 var sampleBytes = require('./sample_bytes.js');
 var bytes = new Buffer(sampleBytes);
 
-const Handlebars = require('handlebars');
-const wrap = require('wordwrapjs');
+const formatLines = require('./format_lines.js');
+const text = fs.readFileSync('template.hbs').toString();
 
-Handlebars.registerHelper('center', function(options) {
-  return '\x0e\n' + options.fn(this) + '\n\x0f';
-});
-
-Handlebars.registerHelper('b', function(options) {
-  return '\x10' + options.fn(this) + '\x11';
-});
-
-Handlebars.registerHelper('u', function(options) {
-  return '\x12' + options.fn(this) + '\x13';
-});
-
-const regex = /[{{{]{0}(\d+?)[}}}]/g;
-
-var snippets = [];
-
-Handlebars.registerHelper('pre', function(options) {
-  const text = options.fn(this);
-  const id = snippets.length;
-  snippets.push(text);
-  return `{{{${id}}}}`;
-});
-
-const file = fs.readFileSync('template.hbs').toString();
-const template = Handlebars.compile(file);
-
-const wrapped = wrap(template(), {
-  width: 32,
-  break: true,
-});
-
-const splitted = wrapped.split('\n');
-
-const snippetsInserted = splitted.map((line) => {
-  const match = line.match(regex);
-
-  if (match) {
-    const index = parseInt(match[0].replace('}', ''));
-    return snippets[index];
-  }
-
-  return line;
-});
+console.log(formatLines(text));
 
 var server = net.createServer(function(socket) {
-  snippetsInserted.forEach((line) => {
-    socket.write(new Buffer(line));
-    socket.write(new Buffer('\n'));
-    console.log(line);
-  });
+  // snippetsInserted.forEach((line) => {
+  //   socket.write(new Buffer(line));
+  //   socket.write(new Buffer('\n'));
+  // });
 
   socket.pipe(socket);
 

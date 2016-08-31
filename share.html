@@ -1,0 +1,278 @@
+<!doctype>
+<html>
+  <head>
+    <title>
+      My Receipt - pbots.net
+    </title>
+    <style>
+      *, *:before, *:after {
+        box-sizing: border-box;
+      }
+
+      .body {
+        background: #171717;
+        margin: 0;
+        padding: 0;
+        font-family: 'HelveticaNeue', Helvetica, Arial, sans-serif;
+      }
+
+      .receipt {
+        background: white;
+        width: 384px;
+        margin: 5% auto;
+        font-family: monospace;
+        font-size: 18px;
+        padding: 18px;
+        position: relative;
+        word-wrap: break-word;
+      }
+
+      .receipt:before, .receipt:after {
+        background: linear-gradient(-45deg, #ffffff 4px, transparent 0), linear-gradient(45deg, #ffffff 4px, transparent 0);
+        background-position: left-bottom;
+        background-repeat: repeat-x;
+        background-size: 8px 8px;
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 32px;
+        left: 0;
+      }
+
+      .receipt:before {
+        top: -8px;
+      }
+
+      .receipt:after {
+        bottom: -8px;
+        transform: scaleY(-1);
+      }
+
+      .receipt__center {
+        text-align: center;
+      }
+
+      .receipt__pre {
+        margin: 0;
+      }
+
+      .shadow {
+        background: linear-gradient(to bottom, rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%);
+        width: 100%;
+        height: 5%;
+        position: fixed;
+        left: 0;
+        opacity: 0.5;
+        display: none;
+      }
+
+      .shadow--top {
+        top: 0;
+      }
+
+      .shadow--bottom {
+        bottom: 0;
+        transform: scaleY(-1);
+      }
+
+      .app {
+        display: flex;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .pane {
+        flex-grow: 1;
+        position: relative;
+        overflow: scroll;
+      }
+
+      .pane--preview {
+        display: flex;
+        flex-direction: column;
+        max-width: 420px;
+      }
+
+      .textarea {
+        background: #cdadf7;
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1) inset;
+        color: hsl(206, 100%, 20%);
+        color: hsl(266, 82%, 30%);
+        color: black;
+        border: 0;
+        width: 100%;
+        height: 100%;
+        resize: none;
+        padding: 15px;
+        font-size: 16px;
+        font-family: monospace;
+        line-height: 20px;
+        flex-grow: 1;
+      }
+
+      .textarea::selection {
+        background: white;
+      }
+
+      .textarea:focus {
+        outline: none;
+      }
+
+      .shelf {
+        background: #cdadf7;
+        border-bottom: 1px solid black;
+        flex-grow: 1;
+        padding: 15px;
+        font-size: 12px;
+      }
+
+      .button {
+        background: #cdadf7;
+        border: 1px solid black;
+        border-radius: 3px;
+        box-shadow: 1px 1px 0 white inset;
+        padding: 8px 12px;
+      }
+
+      .button:active {
+        box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2) inset;
+        background: hsl(266, 82%, 80%);
+      }
+
+      .button:focus {
+        outline: none;
+      }
+    </style>
+  </head>
+  <body class="body">
+    <div class="app">
+      <div class="pane pane--preview">
+        <div class="shelf">
+          <button class="button js-load">Load Example</button>
+        </div>
+        <textarea class="textarea"></textarea>
+      </div>
+      <div class="pane">
+        <div class="receipt"></div>
+        <div class="shadow shadow--top"></div>
+        <div class="shadow shadow--bottom"></div>
+      </div>
+    </div>
+  </body>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      Handlebars.registerHelper('center', function(options) {
+        return '<div class="receipt__center">' + options.fn(this) + '</div>';
+      });
+
+      Handlebars.registerHelper('b', function(options) {
+        return '<b>' + options.fn(this) + '</b>';
+      });
+
+      Handlebars.registerHelper('u', function(options) {
+        return '<u>' + options.fn(this) + '</u>';
+      });
+
+      Handlebars.registerHelper('pre', function(options) {
+        return '<pre class="receipt__pre">' + options.fn(this) + '</pre>';
+      });
+
+      var $textarea = $('.textarea');
+      var $receipt = $('.receipt');
+
+      var updateReceipt = function() {
+        var source   = $(".textarea").val();
+        var template = Handlebars.compile(source);
+
+        try {
+          $receipt.html(template().replace(/\n/g, '<br/>'));
+        } catch(e) {
+
+        }
+
+        localStorage.setItem('source', source);
+      };
+
+      $textarea.on('input propertychange', function(e) {
+        localStorage.setItem('selectionStart', this.selectionStart);
+        updateReceipt();
+      });
+
+      $textarea.on('mousedown, mouseup', function(e) {
+        localStorage.setItem('selectionStart', this.selectionStart);
+        localStorage.setItem('selectionEnd', this.selectionEnd);
+      });
+
+      $textarea.on('scroll', function(e) {
+        localStorage.setItem('scrollTop', e.currentTarget.scrollTop);
+      });
+
+      $textarea.on('focus', function(e) {
+        var selectionStart = localStorage.getItem('selectionStart');
+        var selectionEnd = localStorage.getItem('selectionEnd');
+        var scrollTop = localStorage.getItem('scrollTop');
+
+        selectionStart = parseInt(selectionStart) ||  $textarea.val().length;
+        scrollTop = parseInt(scrollTop);
+
+        e.currentTarget.setSelectionRange(selectionStart, selectionEnd);
+        e.currentTarget.scrollTop = scrollTop;
+      });
+
+      $('.js-load').click(function() {
+        $textarea.val($('#example').html());
+        updateReceipt();
+      });
+
+      var storedSource = localStorage.getItem('source');
+      $textarea.val(storedSource);
+
+      $textarea.focus();
+
+      updateReceipt();
+    });
+  </script>
+
+  <script id="example">
+Based on data for {{#b}}SW4 0XP{{/b}} from the Office for National Statistics.
+
+
+{{#center}}
+* * * * * *
+
+your financial
+future is bright
+
+* * * * * *
+{{/center}}
+
+
+{{#pre}}
+          ,d88b..d88b,
+          888888888888
+          `Y88888888Y'
+            `Y8888Y'
+              `YY'
+{{/pre}}
+
+
+You'll make £32,120,21 in your life.
+
+Somewhat less if you don't own a penis.
+
+House in {{#b}}SW4 0XP{{/b}} have no gender.
+
+And they are usually worth £1,000,000.
+
+Maybe you should have been a house.
+
+
+{{#center}}
+* * * * * *
+{{/center}}
+  </script>
+</html>

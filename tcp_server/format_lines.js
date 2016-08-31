@@ -12,15 +12,23 @@ Handlebars.registerHelper('pre', function(options) {
 });
 
 Handlebars.registerHelper('center', function(options) {
+  // byte 14 - 15
   return '\x0e\n' + options.fn(this) + '\n\x0f';
 });
 
 Handlebars.registerHelper('b', function(options) {
+  // byte 16 - 17
   return '\x10' + options.fn(this) + '\x11';
 });
 
 Handlebars.registerHelper('u', function(options) {
+  // byte 18 - 19
   return '\x12' + options.fn(this) + '\x13';
+});
+
+Handlebars.registerHelper('img', function(options) {
+  // byte 20 - [1-5]
+  return '\n\x14\n';
 });
 
 module.exports = function(text, width) {
@@ -41,3 +49,4 @@ module.exports = function(text, width) {
     return line;
   });
 };
+

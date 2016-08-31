@@ -1,19 +1,15 @@
 var fs = require('fs');
 var net = require('net');
 var dns = require('dns');
-var sampleBytes = require('./sample_bytes.js');
-var bytes = new Buffer(sampleBytes);
 
 const formatLines = require('./format_lines.js');
 const text = fs.readFileSync('template.hbs').toString();
 
-console.log(formatLines(text));
-
 var server = net.createServer(function(socket) {
-  // snippetsInserted.forEach((line) => {
-  //   socket.write(new Buffer(line));
-  //   socket.write(new Buffer('\n'));
-  // });
+  formatLines(text).forEach((line) => {
+    socket.write(new Buffer(line));
+    socket.write(new Buffer('\n'));
+  });
 
   socket.pipe(socket);
 

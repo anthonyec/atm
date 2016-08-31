@@ -4,19 +4,13 @@
 TCPClient client;
 Adafruit_Thermal printer;
 
-byte server[] = { 192, 168, 55, 107 };
+byte server[] = { 192, 168, 55, 106 };
 int port = 2000;
-
-// byte LEFT_ALIGN = 15;
-// byte CENTER_ALIGN = 14;
-// byte BOLD_ON = 15;
-// byte BOLD_OFF = 16;
-// byte UNDERLINE_ON = 17;
-// byte UNDERLINE_OFF = 18;
 
 void setup() {
   // Setup WiFi. The device can store upto 5 credentials
   WiFi.setCredentials("Signal Noise", "S1gnalN01se");
+  WiFi.setCredentials("EE-swnjq2", "law-exile-past");
 
   // Connect to USB serial
   Serial.begin(9600);
@@ -25,7 +19,7 @@ void setup() {
   printer.begin(&Serial1);
   Serial.println("Printer connected");
 
-  Particle.function("requestData", requestData);
+  Particle.function("printData", printData);
   Particle.function("printText", printText);
 
   String ssid = WiFi.SSID();
@@ -72,7 +66,7 @@ void loop() {
   }
 }
 
-int requestData(String url) {
+int printData(String url) {
   Serial.println("Requesting data");
 
   if (client.connect(server, port)) {

@@ -1,3 +1,4 @@
+var fs = require('fs');
 var net = require('net');
 var dns = require('dns');
 var sampleBytes = require('./sample_bytes.js');
@@ -10,22 +11,51 @@ Handlebars.registerHelper('center', function(options) {
   return '\x0e\n' + options.fn(this) + '\n\x0f';
 });
 
-const template = Handlebars.compile('{{#center}}Center me!{{/center}}');
+Handlebars.registerHelper('b', function(options) {
+  return '\x10' + options.fn(this) + '\x11';
+});
+
+Handlebars.registerHelper('u', function(options) {
+  return '\x12' + options.fn(this) + '\x13';
+});
+
+const regex = /[{{{]{0}(\d+?)[}}}]/g;
+
+var snippets = [];
+
+Handlebars.registerHelper('pre', function(options) {
+  const text = options.fn(this);
+  const id = snippets.length;
+  snippets.push(text);
+  return `{{{${id}}}}`;
+});
+
+const file = fs.readFileSync('template.hbs').toString();
+const template = Handlebars.compile(file);
 
 const wrapped = wrap(template(), {
   width: 32,
   break: true,
 });
 
-console.log(wrapped);
+const splitted = wrapped.split('\n');
+
+const snippetsInserted = splitted.map((line) => {
+  const match = line.match(regex);
+
+  if (match) {
+    const index = parseInt(match[0].replace('}', ''));
+    return snippets[index];
+  }
+
+  return line;
+});
 
 var server = net.createServer(function(socket) {
-  // socket.write(new Buffer([133]));
-  // socket.write(new Buffer('25% of your child is obese.\n\nBut you\'re not a child anymore.\n\nLong gone are the days of strolling through the meadows, nothing to worry about but the ice cream truck leaving a little too soon today.\n\n\n\n'));
-
-  wrapped.split('\n').forEach((line) => {
+  snippetsInserted.forEach((line) => {
     socket.write(new Buffer(line));
     socket.write(new Buffer('\n'));
+    console.log(line);
   });
 
   socket.pipe(socket);

@@ -26,9 +26,15 @@ Handlebars.registerHelper('u', function(options) {
   return '\x12' + options.fn(this) + '\x13';
 });
 
-Handlebars.registerHelper('img', function(options) {
-  // byte 20 - [1-5]
-  return '\n\x14\n';
+Handlebars.registerHelper('size', function(size, options) {
+  /*
+    Set font size bytes:
+    small   hex: \x14  dec: 20
+    medium  hex: \x15  dec: 21
+    large   hex: \x16  dec: 22
+  */
+  const startByte = size === 'large' ? '\x16' : '\x15';
+  return startByte + options.fn(this) + '\x14';
 });
 
 module.exports = function(text, width) {

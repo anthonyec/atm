@@ -80,5 +80,6 @@ int printData(String url) {
 
 int printText(String text) {
   printer.println(text);
+  printer.feed(5);
   return 1;
 }

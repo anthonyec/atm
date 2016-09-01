@@ -14,17 +14,18 @@
         margin: 0;
         padding: 0;
         font-family: 'HelveticaNeue', Helvetica, Arial, sans-serif;
+        overflow: hidden;
       }
 
       .receipt {
         background: white;
         width: 384px;
-        margin: 5% auto;
         font-family: monospace;
         font-size: 18px;
         padding: 18px;
         position: relative;
         word-wrap: break-word;
+        transition: transform 120ms ease-out;
       }
 
       .receipt:before, .receipt:after {
@@ -46,6 +47,10 @@
       .receipt:after {
         bottom: -8px;
         transform: scaleY(-1);
+      }
+
+      .receipt--scaled {
+        transform: scale(0.64);
       }
 
       .receipt__center {
@@ -88,14 +93,21 @@
         overflow: scroll;
       }
 
-      .pane--preview {
+      .pane--edit {
         display: flex;
         flex-direction: column;
         max-width: 420px;
       }
 
+      .pane--preview {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
       .textarea {
         background: #cdadf7;
+        background: white;
         box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1) inset;
         color: hsl(206, 100%, 20%);
         color: hsl(266, 82%, 30%);
@@ -111,9 +123,9 @@
         flex-grow: 1;
       }
 
-      .textarea::selection {
+/*      .textarea::selection {
         background: white;
-      }
+      }*/
 
       .textarea:focus {
         outline: none;
@@ -122,17 +134,36 @@
       .shelf {
         background: #cdadf7;
         border-bottom: 1px solid black;
+        display: flex;
         flex-grow: 1;
         padding: 15px;
         font-size: 12px;
+        align-items: center;
+      }
+
+      .shelf__logo {
+        border: 1px solid black;
+        box-shadow: 1px 1px 0 white;
+        border-radius: 3px;
+        width: 30px;
+      }
+
+      .shelf__divider {
+        border-left: 1px solid rgba(0, 0, 0, 0.8);
+        border-right: 1px solid rgba(255, 255, 255, 1);
+        height: 10px;
+        margin: 0 10px;
       }
 
       .button {
         background: #cdadf7;
         border: 1px solid black;
         border-radius: 3px;
-        box-shadow: 1px 1px 0 white inset;
+        box-shadow: 1px 1px 0 white inset, 1px 1px 0 rgba(0, 0, 0, 0.2);
+        cursor: pointer;
         padding: 8px 12px;
+        margin-right: 10px;
+        min-width: 98px;
       }
 
       .button:active {
@@ -143,17 +174,117 @@
       .button:focus {
         outline: none;
       }
+
+      .button[disabled] {
+        box-shadow: none;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        color: rgba(0, 0, 0, 0.4);
+      }
+
+      .error {
+        background: #FA5252;
+        bottom: 0;
+        border-top: 1px solid black;
+        display: none;
+        color: white;
+        width: 100%;
+        padding: 10px;
+        font-size: 12px;
+      }
+
+      .error--show {
+        display: block;
+      }
+
+      .checkbox {
+        background: hsl(266, 22%, 42%);
+        box-shadow: 0 0 0 1px black inset, 2px 2px 0 rgba(0, 0, 0, 0.2) inset;
+        border-radius: 3px;
+        width: 25px;
+        height: 20px;
+        position: relative;
+      }
+
+      .checkbox__input {
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        opacity: 0;
+        z-index: 3;
+      }
+
+      .checkbox__background {
+        background: #D7F7AD;
+        border-radius: inherit;
+        box-shadow: 0 0 0 1px black inset, 2px 2px 0 rgba(0, 0, 0, 0.1) inset;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        opacity: 0;
+        /*transition: opacity 120ms ease-in-out;*/
+        z-index: 1;
+      }
+
+      .checkbox__input:checked ~ .checkbox__knob {
+        left: 100%;
+        transform: translate(-100%);
+      }
+
+      .checkbox__input:checked ~ .checkbox__background {
+        opacity: 1;
+        transition: none;
+      }
+
+      .checkbox__knob {
+        background: #cdadf7;
+        box-shadow: 1px 1px 0 white inset, 1px 1px 0 rgba(0, 0, 0, 0.2);
+        border: 1px solid black;
+        border-radius: inherit;
+        position: absolute;
+        width: 12px;
+        height: 100%;
+        top: 0;
+        left: 0;
+        /*transition: all 50ms ease-in-out;*/
+        z-index: 2;
+      }
+
+      .label {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+      }
+
+      .label__text {
+        margin-right: 5px;
+      }
     </style>
   </head>
   <body class="body">
     <div class="app">
-      <div class="pane pane--preview">
+      <div class="pane pane--edit">
         <div class="shelf">
+          <img class="shelf__logo" src="atm_icon.gif"/>
+          <div class="shelf__divider"></div>
           <button class="button js-load">Load Example</button>
+
+          <label class="label">
+            <span class="label__text">Scale</span>
+            <div class="checkbox checkbox--toggled">
+              <input class="checkbox__input js-toggle" type="checkbox"/>
+              <div class="checkbox__background"></div>
+              <div class="checkbox__knob"></div>
+            </div>
+          </label>
         </div>
         <textarea class="textarea"></textarea>
+        <div class="error">
+          The partial partials/block_quote could not be found
+        </div>
       </div>
-      <div class="pane">
+      <div class="pane pane--preview">
         <div class="receipt"></div>
         <div class="shadow shadow--top"></div>
         <div class="shadow shadow--bottom"></div>
@@ -161,8 +292,8 @@
     </div>
   </body>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  <script src="jquery.min.js"></script>
+  <script src="handlebars.min.js"></script>
   <script>
     $(document).ready(function() {
       Handlebars.registerHelper('center', function(options) {
@@ -183,6 +314,7 @@
 
       var $textarea = $('.textarea');
       var $receipt = $('.receipt');
+      var $error = $('.error');
 
       var updateReceipt = function() {
         var source   = $(".textarea").val();
@@ -190,8 +322,14 @@
 
         try {
           $receipt.html(template().replace(/\n/g, '<br/>'));
+          $error.removeClass('error--show');
         } catch(e) {
+          var time = e.message.includes('Parse error') ? 1000 : 0;
 
+          timeout = setTimeout(function(){
+            $error.text(e.message);
+            $error.addClass('error--show');
+          }, time);
         }
 
         localStorage.setItem('source', source);
@@ -228,17 +366,26 @@
         updateReceipt();
       });
 
+      $('.js-toggle').click(function() {
+        $receipt.toggleClass('receipt--scaled');
+      });
+
+      $('.js-center').click(function() {
+        var selectionStart = localStorage.getItem('selectionStart');
+        var selectionEnd = localStorage.getItem('selectionEnd');
+
+        console.log(selectionStart, selectionEnd);
+      });
+
       var storedSource = localStorage.getItem('source');
       $textarea.val(storedSource);
 
       $textarea.focus();
-
       updateReceipt();
     });
   </script>
 
-  <script id="example">
-Based on data for {{#b}}SW4 0XP{{/b}} from the Office for National Statistics.
+  <script id="example">Based on data for {{#b}}SW4 0XP{{/b}} from the Office for National Statistics.
 
 
 {{#center}}
@@ -247,7 +394,7 @@ Based on data for {{#b}}SW4 0XP{{/b}} from the Office for National Statistics.
 your financial
 future is bright
 
-* * * * * *
+* * * * * *a
 {{/center}}
 
 
@@ -260,13 +407,13 @@ future is bright
 {{/pre}}
 
 
-You'll make £32,120,21 in your life.
+You'll make $32,120,21 in your life.
 
 Somewhat less if you don't own a penis.
 
-House in {{#b}}SW4 0XP{{/b}} have no gender.
+House in {{#u}}SW4 0XP{{/u}} have no gender.
 
-And they are usually worth £1,000,000.
+And they are usually worth $1,000,000.
 
 Maybe you should have been a house.
 
@@ -274,5 +421,7 @@ Maybe you should have been a house.
 {{#center}}
 * * * * * *
 {{/center}}
+
+
   </script>
 </html>

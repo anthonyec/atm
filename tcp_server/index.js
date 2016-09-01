@@ -3,9 +3,10 @@ var net = require('net');
 var dns = require('dns');
 
 const formatLines = require('./format_lines.js');
-const text = fs.readFileSync('template.hbs').toString();
 
 var server = net.createServer(function(socket) {
+  const text = fs.readFileSync('template.hbs').toString();
+
   formatLines(text).forEach((line) => {
     socket.write(new Buffer(line));
     socket.write(new Buffer('\n'));

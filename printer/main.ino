@@ -4,17 +4,16 @@
 TCPClient client;
 Adafruit_Thermal printer;
 
-byte server[] = { 192, 168, 55, 106 };
-int port = 2000;
-
 void setup() {
-  // Setup WiFi. The device can store upto 5 credentials
+  // Setup WiFi. The device can store up to 5 credentials
   WiFi.setCredentials("Signal Noise", "S1gnalN01se");
   WiFi.setCredentials("EE-swnjq2", "law-exile-past");
+  WiFi.setCredentials("BTHub5-8XZ8 2.4GHz", "374a648563");
 
   // Connect to USB serial
   Serial.begin(9600);
   Serial.println("USB connected");
+
   Serial1.begin(19200);
   printer.begin(&Serial1);
   Serial.println("Printer connected");
@@ -23,12 +22,8 @@ void setup() {
   Particle.function("printText", printText);
 
   String ssid = WiFi.SSID();
-  Serial.print("SSID: ");
+  Serial.print("[SSID]: ");
   Serial.println(ssid);
-
-  int ping = WiFi.ping(server);
-  Serial.print("Ping: ");
-  Serial.println(ping);
 
   printer.setLineHeight(35);
 }
@@ -56,6 +51,15 @@ void loop() {
       case 19:
         printer.underlineOff();
         break;
+      case 20:
+        printer.setSize('S');
+        break;
+      case 21:
+        printer.setSize('M');
+        break;
+      case 22:
+        printer.setSize('L');
+        break;
       default:
         Serial1.write(currentByte);
     }
@@ -66,16 +70,50 @@ void loop() {
   }
 }
 
-int printData(String url) {
-  Serial.println("Requesting data");
+// https://community.particle.io/t/spark-function-limits/952/6
+void splitArgStringToArray(String arguments, String *target){
+  int numArgs = 0;
+  int beginIdx = 0;
+  int idx = arguments.indexOf(";");
 
-  if (client.connect(server, port)) {
-    Serial.println("Client connected!!!");
-  } else {
-    Serial.println("Client failed to connect");
+  while (idx != -1) {
+    String arg = arguments.substring(beginIdx, idx);
+    arg.trim();
+    target[numArgs] = arg;
+
+    beginIdx = idx + 1;
+    idx = arguments.indexOf(";", beginIdx);
+    ++numArgs;
   }
 
-  return 1;
+  // Single or last parameter
+  String lastArg = arguments.substring(beginIdx);
+  target[numArgs] = lastArg;
+}
+
+int printData(String data) {
+  String args[3] = {NULL};
+  splitArgStringToArray(data, args);
+
+  String url = args[0];
+  String portStr = args[1];
+  String idStr = args[2];
+  int port = portStr.toInt();
+
+  Serial.println("[REQUESTING]");
+  Particle.publish("tcp", "requesting");
+
+  if (client.connect(url, port)) {
+    Serial.println("[SUCCESS]");
+    Particle.publish("tcp", "success");
+    client.write(idStr);
+    client.flush();
+    return 1;
+  } else {
+    Serial.println("[FAILED]");
+    Particle.publish("tcp", "failed");
+    return 0;
+  }
 }
 
 int printText(String text) {

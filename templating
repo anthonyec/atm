@@ -2,9 +2,10 @@
 {{#bold}}{{/bold}}
 {{#underline}}{{/underline}}
 
-{{#size "large"}}{{/size}}
-{{#size "medium"}}{{/size}}
-{{#size "small"}}{{/size}}
+{{/}}
+
+{{#size large}}{{/size}}
+{{#size medium}}{{/size}}
 
 {{{image "divider"}}}
 {{{image "promotion"}}}

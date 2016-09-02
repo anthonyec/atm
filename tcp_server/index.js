@@ -1,19 +1,9 @@
-var fs = require('fs');
-var net = require('net');
-var dns = require('dns');
-
+const fs = require('fs');
+const net = require('net');
+const dns = require('dns');
 const formatLines = require('./format_lines.js');
 
 var server = net.createServer(function(socket) {
-  const text = fs.readFileSync('template.hbs').toString();
-
-  formatLines(text).forEach((line) => {
-    socket.write(new Buffer(line));
-    socket.write(new Buffer('\n'));
-  });
-
-  socket.pipe(socket);
-
   socket.on('error', function(err) {
     if (err.code == 'ECONNRESET') {
       console.log('Ending current session of client');
@@ -21,7 +11,7 @@ var server = net.createServer(function(socket) {
   });
 
   socket.on('end', function() {
-    console.log('Connected ended ');
+    console.log('Connected ended');
     socket.destroy();
   });
 
@@ -31,8 +21,14 @@ var server = net.createServer(function(socket) {
   });
 
   socket.on('data', function (buffer) {
-    console.log('Received data', buffer);
-    // socket.destroy();
+    const id = buffer.toString();
+    const text = fs.readFileSync(`template_${id}.hbs`).toString();
+
+    formatLines(text).forEach((line) => {
+      socket.write(new Buffer(line));
+      socket.write(new Buffer('\n'));
+    });
+    socket.destroy();
   });
 });
 

@@ -1,11 +1,11 @@
-// Need this empty line to stop big errors hmmm
+// Need this empty line to stop big compile errors hmmm
 #include "Adafruit_Thermal.h"
 
 TCPClient client;
 Adafruit_Thermal printer;
 
 void setup() {
-  // Setup WiFi. The device can store up to 5 credentials
+  // Setup WiFi, the device can store up to 5 credentials
   WiFi.setCredentials("Signal Noise", "S1gnalN01se");
   WiFi.setCredentials("EE-swnjq2", "law-exile-past");
   WiFi.setCredentials("BTHub5-8XZ8 2.4GHz", "374a648563");
@@ -14,21 +14,27 @@ void setup() {
   Serial.begin(9600);
   Serial.println("USB connected");
 
+  // Connect to printer serial. Pass serial to printer lib
   Serial1.begin(19200);
   printer.begin(&Serial1);
   Serial.println("Printer connected");
 
+  // Set up Particle cloud functions
   Particle.function("printData", printData);
   Particle.function("printText", printText);
 
+  // Printer formatting options
+  printer.setLineHeight(35);
+
+  // Debug stuff
   String ssid = WiFi.SSID();
   Serial.print("[SSID]: ");
   Serial.println(ssid);
-
-  printer.setLineHeight(35);
 }
 
 void loop() {
+  // Observe the bytes coming in to see if they match any formatting rules
+  // Bytes 14 to 22 dont seem to be used for anything else
   while(client.available()) {
     byte currentByte = client.read();
 
@@ -61,6 +67,8 @@ void loop() {
         printer.setSize('L');
         break;
       default:
+        // By default send the byte to the printer. Usually this will just be
+        // characters that can be printed
         Serial1.write(currentByte);
     }
   }
@@ -93,6 +101,9 @@ void splitArgStringToArray(String arguments, String *target){
 
 int printData(String data) {
   String args[3] = {NULL};
+
+  // Need to manually split the arguments coming in because Particle cloud can
+  // only send 1 string argument. The dilemter is ";"
   splitArgStringToArray(data, args);
 
   String url = args[0];

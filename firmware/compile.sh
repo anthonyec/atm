@@ -1,5 +1,5 @@
 #!/bin/sh
-particle flash red printer
+particle flash red ./
 
 sleep 10
 

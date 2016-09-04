@@ -9,6 +9,14 @@ const { getDatapointConfig } = require('./utils/get_datapoint_config');
 const { getAreaIdByPostcode } = require('./utils/get_area_id_by_postcode.js');
 const { fetchContent } = require('./utils/fetch_content.js');
 
+const getBaseUrl = function(req) {
+  if (req) {
+    return `${req.protocol}://${req.get('host')}`;
+  }
+
+  return '';
+}
+
 const readJsonFileSync = function(filepath){
   const dir = 'metadata/data/';
   const file = fs.readFileSync(`${dir}${filepath}`, 'utf-8');
@@ -21,14 +29,14 @@ app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 app.get('/', function (req, res) {
-  res.send('Definitely not a Star Wars reference!');
+  res.send(`Try ${getBaseUrl(req)}/api/v1/datapoints/household/?postcode=e84pp`);
 });
 
 /**
 *  API
 **/
 app.get('/api/v1', function (req, res) {
-  res.send('e.g. http://localhost:3000/api/v1/datapoints/household/?postcode=e84pp');
+  res.send(`e.g. ${getBaseUrl(req)}/api/v1/datapoints/household/?postcode=e84pp`);
 });
 
 //  datapoint route
@@ -61,7 +69,7 @@ app.get('/api/v1/datapoints/:datapoint', function(req, res) {
 
       //  3) fetch the actual data from variables endpoint
       const variableId = datapointConfig.variableId;
-      const baseUrl = req.protocol + '://' + req.get('host');
+      const baseUrl = getBaseUrl(req);
       const url = `${baseUrl}/api/v1/variables/${variableId}?areaId=${areaId}`;
       fetchContent(url)
         .then((resp) => {

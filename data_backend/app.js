@@ -121,12 +121,18 @@ app.get('/metadata', function (req, res) {
   const subjects = readJsonFileSync('subjects.json');
   const families = readJsonFileSync('families.json');
   const variables = readJsonFileSync('variables.json');
+  const sampleData = readJsonFileSync('sample_data.json');
 
   //  group families by subjects
   const familiesBySubject = _.groupBy(families, 'subjectId');
 
   //  group variables by families
   const variablesByFamily = _.groupBy(variables, 'familyId');
+
+  //  group sample data by variableIdfamilies
+  const sampleDataByVariable = _.groupBy(sampleData, 'variableId');
+
+  console.log(sampleDataByVariable);
 
   //  construct tree with subjects->families->variables
   const hierarchy = subjects.map((subject) => {
@@ -137,7 +143,15 @@ app.get('/metadata', function (req, res) {
     const familiesWithVars = families.map((family) => {
       //  get vars for current family
       const variables = variablesByFamily[family.familyId] || [];
-      family.children = variables;
+
+      //  get sample data for vars
+      const variablesWithData = variables.map((variable) => {
+        const data = sampleDataByVariable[variable.variableId] || [];
+        variable.data = data[0];
+        return variable;
+      });
+
+      family.children = variablesWithData;
       return family;
     });
 

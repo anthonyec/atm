@@ -1,6 +1,11 @@
 const xml2js = require('xml2js');
 const util = require('util');
 const fs = require('fs');
+const _ = require('lodash');
+
+const SAMPLE_DATA_URL = 'data/sample_data.json';
+const FAMILIES_FILE_URL = 'data/families.json';
+const VARIABLES_FILE_URL = 'data/variables.json';
 
 const parseXmlString = function(string) {
   return new Promise(function(resolve, reject) {
@@ -68,8 +73,6 @@ const storeSubjects = function(subjectXml) {
 };
 
 const storeFamily = function(familyXml, subjectId, clear = false) {
-  const FAMILIES_FILE_URL = 'data/families.json';
-
   const response = familyXml['ns2:GetDatasetFamiliesResponseElement'];
   if (!response || !response['DSFamilies'] || !response['DSFamilies'][0] ||
     !response['DSFamilies'][0]['DSFamily'] ) {
@@ -108,8 +111,6 @@ const storeFamily = function(familyXml, subjectId, clear = false) {
 };
 
 const storeVariable = function(variableXml, familyId, clear = false) {
-  const VARIABLES_FILE_URL = 'data/variables.json';
-
   const response = variableXml['ns2:GetVariablesResponseElement'];
   if (!response || !response['VarFamilies'] || !response['VarFamilies'][0] ||
     !response['VarFamilies'][0]['VarFamily'] ) {
@@ -139,10 +140,22 @@ const storeVariable = function(variableXml, familyId, clear = false) {
     const merge = existingVariables.concat(result);
 
     fs.writeFile(VARIABLES_FILE_URL, JSON.stringify(merge), 'utf8');
-    fs.appendFileSync(VARIABLES_FILE_URL, JSON.stringify(result), 'utf8');
   }
 
   console.log('Stored family JSON');
+};
+
+
+const storeSampleData = function(sampleData, variableId) {
+  //  have to open json parse it and append
+  const file = fs.readFileSync(SAMPLE_DATA_URL, 'utf8');
+  const existingData = JSON.parse(file);
+
+  sampleData.variableId = variableId;
+  const merge = existingData.concat([sampleData]);
+
+  fs.writeFile(SAMPLE_DATA_URL, JSON.stringify(merge), 'utf8');
+  console.log('Stored sample data');
 };
 
 const getSubjects = function() {
@@ -225,9 +238,92 @@ const getVariables = function() {
   }
 };
 
+const getSampleDatum = function(variableId, areaId) {
+  return new Promise((resolve, reject) => {
+    //  variable
+    const API_DATA_URL = `http://localhost:3000/api/v1/variables/${variableId}?areaId=${areaId}&fields=title,description,value`;
+    console.log(`Fetching sample data from: ${API_DATA_URL}`);
+
+    getContent(API_DATA_URL)
+      .then((resp) => {
+        resolve(resp);
+      })
+      .catch((err) => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+const getSampleData = function() {
+  const areaId = '6274999'; // london //  '6275114'; // hackney
+
+  // 1) open existing sample data
+  const sampleDataFile = fs.readFileSync(SAMPLE_DATA_URL, 'utf8');
+  const sampleDataJson = (sampleDataFile)? JSON.parse(sampleDataFile) : [];
+
+  //  see which variables we already have
+  const sampleDataVariables = Object.keys(
+    _.groupBy(sampleDataJson, 'variableId')
+  );
+
+  //  2) go through all variables stored in
+  const variables = JSON.parse(fs.readFileSync(VARIABLES_FILE_URL, 'utf8'));
+
+  let fetchedIndex = 0;
+  let nextVariableId;
+
+  function callGetSampleDatum(variableId) {
+
+    function next() {
+      fetchedIndex++;
+
+      if (fetchedIndex < variables.length) {
+        nextVariableId = variables[fetchedIndex].variableId;
+
+        //  do we have data for it already?
+        if (nextVariableId && sampleDataVariables.indexOf(nextVariableId) > -1) {
+          //  yep, move on
+          next();
+        } else {
+          callGetSampleDatum(nextVariableId);
+        }
+
+      }
+
+    }
+
+    getSampleDatum(variableId, areaId)
+      .then((sampleData) => {
+        //  if not last variable call next
+        storeSampleData(JSON.parse(sampleData), nextVariableId);
+
+        //  find next variable id to add
+        next();
+      })
+      .catch((err) => {
+        console.error('Error getting sample data', err.toString());
+        next();
+      });
+  }
+
+  if (variables.length) {
+    nextVariableId = variables[0].variableId;
+    callGetSampleDatum(nextVariableId);
+  }
+
+}
+
 //  getSubjects();
 //  getFamilies();
-getVariables();
+//  getVariables();
+
+// getSampleDatum(9421, 6275114)
+//   .then((resp) => {
+//     console.log('resp', resp);
+//   });
+
+getSampleData();
 
 // getVariable(2506, true);
 // getVariable(2525);

@@ -38,3 +38,12 @@ particle serial wifi
 
 32 characters per line
 384 pixels width
+
+## SSH - DigitalOcean
+
+```
+ssh root@178.62.113.246
+```
+
+
+

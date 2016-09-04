@@ -3,8 +3,11 @@ const fs = require('fs');
 const exphbs  = require('express-handlebars');
 const _  = require('lodash');
 
-const fetchModule = require('./utils/fetch_xml_content');
-const parserModule = require('./utils/data_parser');
+const { fetchXmlContent } = require('./utils/fetch_xml_content');
+const { parseDataResponse } = require('./utils/data_parser');
+const { getDatapointConfig } = require('./utils/get_datapoint_config');
+const { getAreaIdByPostcode } = require('./utils/get_area_id_by_postcode.js');
+const { fetchContent } = require('./utils/fetch_content.js');
 
 const readJsonFileSync = function(filepath){
   const dir = 'metadata/data/';
@@ -25,8 +28,58 @@ app.get('/', function (req, res) {
 *  API
 **/
 app.get('/api/v1', function (req, res) {
-  res.json({ msg: 'Hello World!' });
+  res.send('e.g. http://localhost:3000/api/v1/datapoints/household/?postcode=e84pp');
 });
+
+//  datapoint route
+app.get('/api/v1/datapoints/:datapoint', function(req, res) {
+  //  validation
+  if (!req.params.datapoint) {
+    res.status(500).send({ error: 'Missing ":datapoint" part of query' });
+  }
+  if (!req.query.postcode) {
+    res.status(500).send({ error: 'Missing "postcode" query param' });
+  }
+
+  const datapoint = req.params.datapoint;
+  const postcode = req.query.postcode;
+
+  //  1) resolve datapoint name (e.g. life-expectancy) to actual variable name as used at neighbourhood.statistics.gov.uk
+  const datapointConfig = getDatapointConfig(datapoint)
+
+  //  2) get areaId based on postcode and area level that's available for variable
+  if (!datapointConfig.areaLevel) {
+    res.status(500).send({ error: `Could not find area level for datapoint: ${datapoint}` });
+  }
+
+  const areaLevel = datapointConfig.areaLevel;
+  getAreaIdByPostcode(postcode, datapointConfig.areaLevel)
+    .then((areaId) => {
+      if (areaId === -1) {
+        res.status(500).send({ error: `Could not find area for postcode: ${postcode}` });
+      }
+
+      //  3) fetch the actual data from variables endpoint
+      const variableId = datapointConfig.variableId;
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const url = `${baseUrl}/api/v1/variables/${variableId}?areaId=${areaId}`;
+      fetchContent(url)
+        .then((resp) => {
+          //  4) potentially do some operations on the fetched data
+          const respObj = JSON.parse(resp);
+          res.json(respObj);
+        })
+        .catch((err) => {
+
+        });
+    })
+    .catch((err) => {
+      const errMsg = (err) ? err.toString(): '';
+      res.status(500).send({ error: `Could not find area for postcode: ${postcode}. ${errMsg}` });
+    });
+
+});
+
 
 //  variables route
 //  e.g. http://localhost:3000/api/v1/variables/5784?areaId=6275114&fields=value,title,description
@@ -46,10 +99,10 @@ app.get('/api/v1/variables/:varId', function(req, res) {
   const fields = (req.query.fields)? req.query.fields.split(',') : [];
 
   const DATA_URL = `http://neighbourhood.statistics.gov.uk/NDE2/Deli/getTables?Areas=${areaId}&Variables=${variableId}`;
-  fetchModule.fetchXmlContent(DATA_URL)
+  fetchXmlContent(DATA_URL)
     .then((resp) => {
       try {
-        res.json(parserModule.parseDataResponse(resp, fields));
+        res.json(parseDataResponse(resp, fields));
       } catch(err) {
         res.status(500).send({ error: (err) ? err.toString() : 'Unknown error' });
       }

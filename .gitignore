@@ -10,3 +10,6 @@ jspm_packages
 npm-debug.log
 ehthumbs.db
 Thumbs.dbnode_modules
+
+# excel lock files
+~$*

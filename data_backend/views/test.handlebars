@@ -1,5 +1,7 @@
 <select name="datapoint">
-  <option value="household">Household</option>
+  {{#each datapoints}}
+    <option value="{{this.id}}">{{this.name}}</option>
+  {{/each}}
 </select>
 <input name="postcode" placeholder="Postcode (e.g. E8 4PP)" />
 <button class="submit-btn">Go!</button>

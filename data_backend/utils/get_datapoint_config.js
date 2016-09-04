@@ -2,6 +2,8 @@ const getVarIdForDatapoint = function(datapoint) {
   switch(datapoint) {
     case 'household':
       return 8634;
+    case 'life-expectancy':
+      return 5781;
     default:
       return '';
   }
@@ -22,6 +24,7 @@ const getVarIdForDatapoint = function(datapoint) {
 const getAreaLevelForDatapoint = function(datapoint) {
   switch(datapoint) {
     case 'household':
+    case 'life-expectancy':
       return 13;
     default:
       return 11;

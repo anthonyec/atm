@@ -221,15 +221,22 @@ const getVariables = function() {
   let nextFamilyId;
 
   function callGetVariable(familyId, clear) {
+    function next() {
+      //  if not last variable call next
+      if (fetchedIndex < families.length) {
+        fetchedIndex++;
+        nextFamilyId = families[fetchedIndex].familyId;
+        callGetVariable(nextFamilyId);
+      }
+    }
+
     getVariable(familyId)
       .then(() => {
-        //  if not last variable call next
-        if (fetchedIndex < families.length) {
-          fetchedIndex++;
-          nextFamilyId = families[fetchedIndex].familyId;
-          callGetVariable(nextFamilyId);
-        }
+        next();
       })
+      .catch(() => {
+        next();
+      });
   }
 
   if (families.length) {

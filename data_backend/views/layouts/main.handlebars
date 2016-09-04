@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Metadata</title>
+    <style>
+      * {
+        font-family: Helvetica, Arial, sans-serif;
+      }
+      h1, h2, h3, h4, h5 {
+        font-weight: normal;
+        margin: 5px 0;
+      }
+      .expandable {
+        cursor: pointer;
+      }
+        .expandable > h3:after,
+        .expandable > h4:after {
+          position: relative;
+          top: 12px;
+          left: 10px;
+          content: '';
+          width: 5px;
+          height: 5px;
+          border: 5px solid transparent;
+          border-top-color: black;
+        }
+          .expandable.expanded > h3:after,
+          .expandable.expanded > h4:after {
+            border-bottom-color: black;
+            border-top-color: transparent;
+            top: -14px;
+          }
+
+      .expandable ul {
+        display: none;
+      }
+        .expandable.expanded > * {
+          display: block;
+        }
+
+      .variable-item {
+        margin-bottom: 4px;
+      }
+      .sample-value {
+        font-style: italic;
+        font-size: 14px;
+      }
+    </style>
+</head>
+<body>
+
+    {{{body}}}
+
+    <script src="js/jquery.min.js"></script>
+    <script>
+
+      var fetchDataForPostcode = function(datapoint, postcode) {
+
+        var url = '/api/v1/datapoints/' + datapoint + '/?postcode=' + postcode;
+        $.ajax({
+          url: url,
+          success: function(data) {
+            console.log('data', data);
+            $('.data-wrapper').html(data);
+          },
+          error: function(xhr) {
+            console.error(xhr);
+          }
+        })
+
+      };
+
+      $(document).ready(function() {
+
+        //  metedata page
+        $('li.expandable').click(function(evt) {
+          //  enable links
+          if (evt.target.tagName.toLowerCase() === 'a') {
+            return true
+          }
+
+          $(this).toggleClass('expanded');
+          return false;
+        });
+
+        //  test page
+        $('.submit-btn').on('click', function(evt) {
+          evt.preventDefault();
+
+          var datapoint = $('[name=datapoint]').val();
+          var postcode = $('[name=postcode]').val();
+
+          fetchDataForPostcode(datapoint, postcode)
+        });
+
+      });
+
+
+
+    </script>
+
+</body>
+</html>

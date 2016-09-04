@@ -2,11 +2,62 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Example App</title>
+    <title>Metadata</title>
+    <style>
+      * {
+        font-family: Helvetica, Arial, sans-serif;
+      }
+      h1, h2, h3, h4, h5 {
+        font-weight: normal;
+        margin: 5px 0;
+      }
+      .expandable {
+        cursor: pointer;
+      }
+        .expandable > h3:after,
+        .expandable > h4:after {
+          position: relative;
+          top: 12px;
+          left: 10px;
+          content: '';
+          width: 5px;
+          height: 5px;
+          border: 5px solid transparent;
+          border-top-color: black;
+        }
+          .expandable.expanded > h3:after,
+          .expandable.expanded > h4:after {
+            border-bottom-color: black;
+            border-top-color: transparent;
+            top: -14px;
+          }
+
+      .expandable ul {
+        display: none;
+      }
+        .expandable.expanded > * {
+          display: block;
+        }
+    </style>
 </head>
 <body>
 
     {{{body}}}
+
+    <script src="js/jquery.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('li.expandable').click(function(evt) {
+          //  enable links
+          if (evt.target.tagName.toLowerCase() === 'a') {
+            return true
+          }
+
+          $(this).toggleClass('expanded');
+          return false;
+        });
+      });
+    </script>
 
 </body>
 </html>

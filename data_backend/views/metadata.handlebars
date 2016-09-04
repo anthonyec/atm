@@ -1,16 +1,16 @@
 <h2>Subjects</h2>
 <ul>
 {{#each hierarchy}}
-  <li>
-    {{this.subjectId}}:{{this.name}}
+  <li class='expandable'>
+    <h3>{{this.subjectId}}:{{this.name}}</h3>
     <ul>
       {{#each children}}
-        <li>
-          {{this.familyId}}: {{this.name}}
+        <li class='expandable'>
+          <h4>{{this.familyId}}: {{this.name}}</h4>
           <ul>
             {{#each children}}
               <li>
-                {{this.variableId}}: {{this.name}}
+                <a href='http://neighbourhood.statistics.gov.uk/NDE2/Deli/getTables?Areas=6326132&Variables={{this.variableId}}' target='_blank'>{{this.variableId}}: {{this.name}}</a>
               </li>
             {{/each}}
           </ul>

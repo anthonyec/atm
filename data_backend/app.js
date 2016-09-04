@@ -146,8 +146,6 @@ app.get('/metadata', function (req, res) {
   //  group sample data by variableIdfamilies
   const sampleDataByVariable = _.groupBy(sampleData, 'variableId');
 
-  console.log(sampleDataByVariable);
-
   //  construct tree with subjects->families->variables
   const hierarchy = subjects.map((subject) => {
     //  get families for current subject

@@ -43,10 +43,10 @@ app.get('/api/v1', function (req, res) {
 app.get('/api/v1/datapoints/:datapoint', function(req, res) {
   //  validation
   if (!req.params.datapoint) {
-    res.status(500).send({ error: 'Missing ":datapoint" part of query' });
+    res.status(400).send({ error: 'Missing ":datapoint" part of query' });
   }
   if (!req.query.postcode) {
-    res.status(500).send({ error: 'Missing "postcode" query param' });
+    res.status(400).send({ error: 'Missing "postcode" query param' });
   }
 
   const datapoint = req.params.datapoint;
@@ -94,10 +94,10 @@ app.get('/api/v1/datapoints/:datapoint', function(req, res) {
 app.get('/api/v1/variables/:varId', function(req, res) {
   //  validation
   if (!req.params.varId) {
-    res.status(500).send({ error: 'Missing "varId" part of query' });
+    res.status(400).send({ error: 'Missing "varId" part of query' });
   }
   if (!req.query.areaId) {
-    res.status(500).send({ error: 'Missing "areaId" query param' });
+    res.status(400).send({ error: 'Missing "areaId" query param' });
   }
 
   //  varIds: 5781,5784

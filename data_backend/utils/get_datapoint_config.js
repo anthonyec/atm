@@ -21,6 +21,8 @@ const getVarIdForDatapoint = function(datapoint) {
 
 const getAreaLevelForDatapoint = function(datapoint) {
   switch(datapoint) {
+    case 'household':
+      return 13;
     default:
       return 11;
   }

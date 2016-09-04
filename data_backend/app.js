@@ -120,6 +120,12 @@ app.get('/api/v1/variables/:varId', function(req, res) {
     });
 });
 
+/**
+*   TEST
+**/
+app.get('/test', function(req, res) {
+  res.render('test');
+});
 
 /**
 *   METADATA

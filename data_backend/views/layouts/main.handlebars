@@ -60,6 +60,14 @@
         var url = '/api/v1/datapoints/' + datapoint + '/?postcode=' + postcode;
         $.ajax({
           url: url,
+          beforeSend: function() {
+            $('.fetching-notice').show();
+            $('.submit-btn').hide();
+          },
+          complete: function() {
+            $('.fetching-notice').hide();
+            $('.submit-btn').show();
+          },
           success: function(data) {
             $('.data-wrapper').html(data.value);
           },
@@ -84,7 +92,7 @@
         });
 
         //  test page
-        $('.submit-btn').on('click', function(evt) {
+        $('form').on('submit', function(evt) {
           evt.preventDefault();
 
           var datapoint = $('[name=datapoint]').val();

@@ -1,6 +1,22 @@
 <h2>Subjects</h2>
 <ul>
-{{#each subjects}}
-  <li>{{this.subjectId}}:{{this.name}}</li>
+{{#each hierarchy}}
+  <li>
+    {{this.subjectId}}:{{this.name}}
+    <ul>
+      {{#each children}}
+        <li>
+          {{this.familyId}}: {{this.name}}
+          <ul>
+            {{#each children}}
+              <li>
+                {{this.variableId}}: {{this.name}}
+              </li>
+            {{/each}}
+          </ul>
+        </li>
+      {{/each}}
+    </ul>
+  </li>
 {{/each}}
 </ul>

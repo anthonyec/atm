@@ -11,7 +11,7 @@ var server = net.createServer((socket) => {
 
   socket.on('data', (buffer) => {
     const id = buffer.toString().replace(/\n/g, '');
-    const text = fs.readFileSync(`template_${id}.hbs`).toString();
+    const text = fs.readFileSync(`views/receipts/template_${id}.hbs`).toString();
 
     formatLines(text).forEach((line) => {
       socket.write(new Buffer(line));

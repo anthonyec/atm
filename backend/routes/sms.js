@@ -30,7 +30,7 @@ function sendInvalidMessageTo (phoneNumber) {
 }
 
 router.get('/', function(req, res) {
-  res.render('page/sms');
+  res.render('pages/sms');
 });
 
 router.post('/', function(req, res) {

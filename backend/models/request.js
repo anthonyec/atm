@@ -6,8 +6,11 @@ const Request = sequelize.define('request', {
     type: Sequelize.STRING,
     field: 'phone_number',
   },
-  completed: {
+  status: {
     type: Sequelize.BOOLEAN,
+  },
+  robot_id: {
+    type: Sequelize.INTEGER,
   },
 }, {
   freezeTableName: true,

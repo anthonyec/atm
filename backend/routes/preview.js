@@ -28,8 +28,10 @@ router.post('/print', function(req, res) {
     });
 
     func.then((data) => {
+      fs.unlink(`./temp/${filename}.hbs`);
       res.sendStatus(200);
     }, (err) => {
+      fs.unlink(`./temp/${filename}.hbs`);
       res.sendStatus(500);
     });
   });

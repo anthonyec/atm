@@ -1,0 +1,169 @@
+<style>
+  body {
+    overflow: hidden;
+  }
+</style>
+
+<div class="app">
+  <div class="pane pane--edit">
+    <div class="shelf">
+      <img class="shelf__logo js-logo" src="sleep.gif"/>
+      {{!-- <button class="button js-load">Load Example</button> --}}
+      <button class="button js-print" disabled>Print</button>
+      {{!-- <div class="shelf__divider"></div> --}}
+
+      <label class="label">
+        <span class="label__text">Scale</span>
+        <div class="checkbox checkbox--toggled">
+          <input class="checkbox__input js-toggle" type="checkbox"/>
+          <div class="checkbox__background"></div>
+          <div class="checkbox__knob"></div>
+        </div>
+      </label>
+    </div>
+    <textarea class="textarea"></textarea>
+    <div class="error">
+      The partial partials/block_quote could not be found
+    </div>
+  </div>
+  <div class="pane pane--preview">
+    <div class="receipt receipt"></div>
+    <div class="shadow shadow--top"></div>
+    <div class="shadow shadow--bottom"></div>
+  </div>
+</div>
+
+<script src="jquery.min.js"></script>
+<script src="handlebars.min.js"></script>
+<script>
+  $(document).ready(function() {
+    Handlebars.registerHelper('center', function(options) {
+      return '<div class="receipt__center">' + options.fn(this) + '</div>';
+    });
+
+    Handlebars.registerHelper('b', function(options) {
+      return '<b>' + options.fn(this) + '</b>';
+    });
+
+    Handlebars.registerHelper('u', function(options) {
+      return '<u>' + options.fn(this) + '</u>';
+    });
+
+    Handlebars.registerHelper('pre', function(options) {
+      return '<pre class="receipt__pre">' + options.fn(this) + '</pre>';
+    });
+
+    var $textarea = $('.textarea');
+    var $receipt = $('.receipt');
+    var $error = $('.error');
+
+    var $logo = $('.js-logo');
+    var $print = $('.js-print');
+
+    var setFaceStatus = function(status) {
+      var imgSrc = status + '.gif';
+      var currentSrc =  $logo.attr('src');
+
+      if (currentSrc !== imgSrc) {
+        $logo.attr('src', imgSrc);
+      }
+    }
+
+    var checkStatus = function() {
+      $.ajax({
+        url: '/preview/status',
+        success: function(response) {
+          if (response.connected) {
+            setFaceStatus('awake');
+          } else {
+            setFaceStatus('sleep');
+          }
+
+          $print.attr('disabled', !response.connected);
+
+          setTimeout(() => {
+            checkStatus();
+          }, 10000);
+        },
+      });
+    }
+
+    var updateReceipt = function() {
+      var source   = $(".textarea").val();
+      var template = Handlebars.compile(source);
+
+      try {
+        $receipt.html(template().replace(/\n/g, '<br/>'));
+        $error.removeClass('error--show');
+      } catch(e) {
+        var time = e.message.includes('Parse error') ? 1000 : 0;
+
+        timeout = setTimeout(function(){
+          $error.text(e.message);
+          $error.addClass('error--show');
+        }, time);
+      }
+
+      localStorage.setItem('source', source);
+    };
+
+    $textarea.on('input propertychange', function(e) {
+      localStorage.setItem('selectionStart', this.selectionStart);
+      updateReceipt();
+    });
+
+    $textarea.on('mousedown, mouseup', function(e) {
+      localStorage.setItem('selectionStart', this.selectionStart);
+      localStorage.setItem('selectionEnd', this.selectionEnd);
+    });
+
+    $textarea.on('scroll', function(e) {
+      localStorage.setItem('scrollTop', e.currentTarget.scrollTop);
+    });
+
+    $textarea.on('focus', function(e) {
+      var selectionStart = localStorage.getItem('selectionStart');
+      var selectionEnd = localStorage.getItem('selectionEnd');
+      var scrollTop = localStorage.getItem('scrollTop');
+
+      selectionStart = parseInt(selectionStart) ||  $textarea.val().length;
+      scrollTop = parseInt(scrollTop);
+
+      e.currentTarget.setSelectionRange(selectionStart, selectionEnd);
+      e.currentTarget.scrollTop = scrollTop;
+    });
+
+    $('.js-load').click(function() {
+      $textarea.val($('#example').html());
+      updateReceipt();
+    });
+
+    $('.js-toggle').click(function() {
+      $receipt.toggleClass('receipt--scaled');
+    });
+
+    $print.click(function() {
+      $.ajax({
+        url: '/preview/print',
+        type: 'POST',
+        data: {
+          text: $textarea.val(),
+        },
+        success: function() {
+          setFaceStatus('awake');
+          $print.attr('disabled', 'false');
+        },
+      });
+
+      setFaceStatus('suprised');
+      $print.attr('disabled', 'true');
+    });
+
+    var storedSource = localStorage.getItem('source');
+    $textarea.val(storedSource);
+
+    $textarea.focus();
+    updateReceipt();
+    checkStatus();
+  });
+</script>

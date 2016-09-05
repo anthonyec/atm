@@ -7,6 +7,7 @@ const tcp = require('./tcp');
 const config = require('./config/config.json');
 const routes = require('./routes/index');
 const sms  = require('./routes/sms');
+const preview  = require('./routes/preview');
 
 const app = express();
 const sequelize = new Sequelize(
@@ -29,6 +30,7 @@ app.use(bodyParser.json());
 
 app.use('/', routes);
 app.use('/sms', sms);
+app.use('/preview', preview);
 
 app.listen(4000, function () {
   console.log('[APP] server started: port 4000');

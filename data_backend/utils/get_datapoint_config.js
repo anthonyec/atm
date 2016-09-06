@@ -15,7 +15,7 @@ const getVarIdForDatapoint = function(datapoint) {
     case 'fishing-industry':
       return '1012,1014';
     case 'rat-poison':
-      return 6188;
+      return 6194;
     case 'population':
       return 627;
     case 'heart-disease':

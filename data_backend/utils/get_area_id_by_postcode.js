@@ -19,8 +19,6 @@ const parseFindAreaXml = function(xml, levelType) {
 
   const areaFallWithin = areaFallsWithins['AreaFallsWithin']
 
-  console.log('levelType', levelType);
-
   //  filter on nested area -> levelTypeId
   const foundAreas = areaFallWithin.filter((areaFall) => {
     if (areaFall['Area'] && areaFall['Area'][0]) {
@@ -76,91 +74,3 @@ exports.getAreaIdByPostcode = function(postcode, areaLevel) {
 
   });
 }
-
-// ns2:FindAreasResponseElement xmlns="http://neighbourhood.statistics.gov.uk/nde/v1-0/discoverystructs" xmlns:ns2="http://neighbourhood.statistics.gov.uk/nde/discoveryservice">
-// <AreaFallsWithins>
-// <AreaFallsWithin>...</AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin>
-// <Area>
-// <LevelTypeId>13</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6275114</AreaId>
-// <Name>Hackney</Name>
-// </Area>
-// </FallsWithin>
-// <Area>
-// <LevelTypeId>141</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6315338</AreaId>
-// <Name>Hackney 023G</Name>
-// </Area>
-// </AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin>
-// <Area>
-// <LevelTypeId>13</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6275114</AreaId>
-// <Name>Hackney</Name>
-// </Area>
-// </FallsWithin>
-// <Area>
-// <LevelTypeId>140</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6275702</AreaId>
-// <Name>Hackney 023</Name>
-// </Area>
-// </AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
-// <Area>
-// <LevelTypeId>13</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6275114</AreaId>
-// <Name>Hackney</Name>
-// </Area>
-// </AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
-// <Area>
-// <LevelTypeId>11</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6274999</AreaId>
-// <Name>London</Name>
-// </Area>
-// </AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
-// <Area>...</Area>
-// </AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
-// <Area>
-// <LevelTypeId>9</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6274990</AreaId>
-// <Name>England and Wales</Name>
-// </Area>
-// </AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
-// <Area>
-// <LevelTypeId>8</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6274989</AreaId>
-// <Name>Great Britain</Name>
-// </Area>
-// </AreaFallsWithin>
-// <AreaFallsWithin>
-// <FallsWithin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
-// <Area>
-// <LevelTypeId>7</LevelTypeId>
-// <HierarchyId>26</HierarchyId>
-// <AreaId>6274988</AreaId>
-// <Name>United Kingdom</Name>
-// </Area>
-// </AreaFallsWithin>
-// </AreaFallsWithins>
-// </ns2:FindAreasResponseElement>
-

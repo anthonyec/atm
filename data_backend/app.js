@@ -9,6 +9,14 @@ const { getDatapointConfig } = require('./utils/get_datapoint_config');
 const { getAreaIdByPostcode } = require('./utils/get_area_id_by_postcode.js');
 const { fetchContent } = require('./utils/fetch_content.js');
 
+const getBaseUrl = function(req) {
+  if (req) {
+    return `${req.protocol}://${req.get('host')}`;
+  }
+
+  return '';
+}
+
 const readJsonFileSync = function(filepath){
   const dir = 'metadata/data/';
   const file = fs.readFileSync(`${dir}${filepath}`, 'utf-8');
@@ -21,24 +29,24 @@ app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 app.get('/', function (req, res) {
-  res.send('Definitely not a Star Wars reference!');
+  res.send(`Try ${getBaseUrl(req)}/api/1/datapoints/household/?postcode=e84pp`);
 });
 
 /**
 *  API
 **/
 app.get('/api/v1', function (req, res) {
-  res.send('e.g. http://localhost:3000/api/v1/datapoints/household/?postcode=e84pp');
+  res.send(`e.g. ${getBaseUrl(req)}/api/1/datapoints/household/?postcode=e84pp`);
 });
 
 //  datapoint route
-app.get('/api/v1/datapoints/:datapoint', function(req, res) {
+app.get('/api/1/datapoints/:datapoint', function(req, res) {
   //  validation
   if (!req.params.datapoint) {
-    res.status(500).send({ error: 'Missing ":datapoint" part of query' });
+    res.status(400).send({ error: 'Missing ":datapoint" part of query' });
   }
   if (!req.query.postcode) {
-    res.status(500).send({ error: 'Missing "postcode" query param' });
+    res.status(400).send({ error: 'Missing "postcode" query param' });
   }
 
   const datapoint = req.params.datapoint;
@@ -61,16 +69,23 @@ app.get('/api/v1/datapoints/:datapoint', function(req, res) {
 
       //  3) fetch the actual data from variables endpoint
       const variableId = datapointConfig.variableId;
-      const baseUrl = req.protocol + '://' + req.get('host');
-      const url = `${baseUrl}/api/v1/variables/${variableId}?areaId=${areaId}`;
+      const baseUrl = getBaseUrl(req);
+      const url = `${baseUrl}/api/1/variables/${variableId}?areaId=${areaId}`;
+
+      console.log('url', url);
+
       fetchContent(url)
         .then((resp) => {
-          //  4) potentially do some operations on the fetched data
           const respObj = JSON.parse(resp);
-          res.json(respObj);
+
+          //  4) potentially do some operations on the fetched data
+          const processing = datapointConfig.processing;
+          const processed = processing(respObj);
+
+          res.json(processed);
         })
         .catch((err) => {
-
+          res.status(500).send({ error: `Error processing fetched data: ${ (err) ? err.toString() : 'Unknown error' }` });
         });
     })
     .catch((err) => {
@@ -82,27 +97,27 @@ app.get('/api/v1/datapoints/:datapoint', function(req, res) {
 
 
 //  variables route
-//  e.g. http://localhost:3000/api/v1/variables/5784?areaId=6275114&fields=value,title,description
-app.get('/api/v1/variables/:varId', function(req, res) {
+//  e.g. http://localhost:3000/api/1/variables/5784?areaId=6275114&fields=value,title,description
+app.get('/api/1/variables/:varId', function(req, res) {
   //  validation
   if (!req.params.varId) {
-    res.status(500).send({ error: 'Missing "varId" part of query' });
+    res.status(400).send({ error: 'Missing "varId" part of query' });
   }
   if (!req.query.areaId) {
-    res.status(500).send({ error: 'Missing "areaId" query param' });
+    res.status(400).send({ error: 'Missing "areaId" query param' });
   }
 
   //  varIds: 5781,5784
   //  areaId: 6275114
-  const variableId = req.params.varId;
+  const variableIds = req.params.varId;
   const areaId = req.query.areaId;
   const fields = (req.query.fields)? req.query.fields.split(',') : [];
 
-  const DATA_URL = `http://neighbourhood.statistics.gov.uk/NDE2/Deli/getTables?Areas=${areaId}&Variables=${variableId}`;
+  const DATA_URL = `http://neighbourhood.statistics.gov.uk/NDE2/Deli/getTables?Areas=${areaId}&Variables=${variableIds}`;
   fetchXmlContent(DATA_URL)
     .then((resp) => {
       try {
-        res.json(parseDataResponse(resp, fields));
+        res.json(parseDataResponse(resp, variableIds, fields));
       } catch(err) {
         res.status(500).send({ error: (err) ? err.toString() : 'Unknown error' });
       }
@@ -112,6 +127,14 @@ app.get('/api/v1/variables/:varId', function(req, res) {
     });
 });
 
+/**
+*   TEST
+**/
+app.get('/test', function(req, res) {
+  const datapoints = readJsonFileSync('datapoints.json');
+
+  res.render('test', { datapoints });
+});
 
 /**
 *   METADATA
@@ -131,8 +154,6 @@ app.get('/metadata', function (req, res) {
 
   //  group sample data by variableIdfamilies
   const sampleDataByVariable = _.groupBy(sampleData, 'variableId');
-
-  console.log(sampleDataByVariable);
 
   //  construct tree with subjects->families->variables
   const hierarchy = subjects.map((subject) => {

@@ -3,53 +3,12 @@ const util = require('util');
 const fs = require('fs');
 const _ = require('lodash');
 
+const { fetchXmlContent } = require('./../utils/fetch_xml_content');
+const { fetchContent } = require('./../utils/fetch_content.js');
+
 const SAMPLE_DATA_URL = 'data/sample_data.json';
 const FAMILIES_FILE_URL = 'data/families.json';
 const VARIABLES_FILE_URL = 'data/variables.json';
-
-const parseXmlString = function(string) {
-  return new Promise(function(resolve, reject) {
-    const parser = new xml2js.Parser();
-    parser.parseString(string, function (err, xml) {
-      if (err) {
-          //  problem with parsing fetched xml
-          reject(new Error('Error parsing fetched xml: ' + err));
-        } else {
-          //  all good
-          resolve(xml);
-        }
-    });
-  });
-}
-
-const getContent = function(url) {
-  // return new pending promise
-  return new Promise((resolve, reject) => {
-    // select http or https module, depending on reqested url
-    const lib = url.startsWith('https') ? require('https') : require('http');
-    const request = lib.get(url, (response) => {
-      // handle http errors
-      if (response.statusCode < 200 || response.statusCode > 299) {
-         reject(new Error('Failed to load page, status code: ' + response.statusCode));
-       }
-      // temporary data holder
-      const body = [];
-      // on every content chunk, push it to the data array
-      response.on('data', (chunk) => body.push(chunk));
-      // we are done, resolve promise with those joined chunks
-      response.on('end', () => resolve(body.join('')));
-    });
-    // handle connection errors of the request
-    request.on('error', (err) => reject(err))
-    })
-};
-
-const getXmlContent = function(url) {
-  return getContent(url)
-    .then((response) => {
-      return parseXmlString(response);
-    });
-};
 
 const storeSubjects = function(subjectXml) {
   const response = subjectXml['ns2:GetSubjectsResponseElement'];
@@ -91,9 +50,6 @@ const storeFamily = function(familyXml, subjectId, clear = false) {
 
     result.push({familyId, subjectId, name: familyName, startDate: familyStartDate, endDate: familyEndDate, });
   });
-
-  console.log('result');
-  console.log(result);
 
   if (clear) {
     //  start writing new file
@@ -161,7 +117,7 @@ const storeSampleData = function(sampleData, variableId) {
 const getSubjects = function() {
   //  subjects
   const subjectUrl = 'http://neighbourhood.statistics.gov.uk/NDE2/Disco/GetSubjects';
-  getXmlContent(subjectUrl)
+  fetchXmlContent(subjectUrl)
     .then((xml) => {
       storeSubjects(xml);
     })
@@ -171,30 +127,51 @@ const getSubjects = function() {
 };
 
 const getFamily = function(subjectId, clear = false) {
+  return new Promise((resolve, reject) => {
   //  family
   const familyUrl = `http://neighbourhood.statistics.gov.uk/NDE2/Disco/GetDatasetFamilies?SubjectId=${subjectId}`;
   console.log(`Fetching family url:${familyUrl}`);
 
-  getXmlContent(familyUrl)
+  fetchXmlContent(familyUrl)
     .then((xml) => {
       storeFamily(xml, subjectId, clear);
+      resolve();
     })
     .catch((err) => {
       console.error(err);
+      reject(err);
     });
+
+  });
 };
 
 const getFamilies = function() {
   const subjects = JSON.parse(fs.readFileSync('data/subjects.json', 'utf8'));
 
   let index = 0;
-  subjects.forEach((subject) => {
-    const subjectId = subject.subjectId;
-    const clear = index === 0;
+  function callGetFamily(subjectId, clear) {
+     function next() {
+      //  if not last variable call next
+      if (index < subjects.length) {
+        index++;
+        nextSubjectId = subjects[index].subjectId;
+        callGetFamily(nextSubjectId);
+      }
+    }
 
-    getFamily(subjectId, clear);
-    index++;
-  });
+    getFamily(subjectId)
+      .then(() => {
+        next();
+      })
+      .catch(() => {
+        next();
+      });
+  }
+
+  if (subjects.length) {
+    nextSubjectId = subjects[0].subjectId;
+    callGetFamily(nextSubjectId, true);
+  }
 };
 
 const getVariable = function(familyId, clear = false) {
@@ -203,7 +180,7 @@ const getVariable = function(familyId, clear = false) {
     const variableUrl = `http://neighbourhood.statistics.gov.uk/NDE2/Disco/GetVariables?DSFamilyId=${familyId}`;
     console.log(`Fetching variable url:${variableUrl}`);
 
-    getXmlContent(variableUrl)
+    fetchXmlContent(variableUrl)
       .then((xml) => {
         storeVariable(xml, familyId, clear);
         resolve();
@@ -323,14 +300,13 @@ const getSampleData = function() {
 
 //  getSubjects();
 //  getFamilies();
-//  getVariables();
+getVariables();
+//  getSampleData();
 
 // getSampleDatum(9421, 6275114)
 //   .then((resp) => {
 //     console.log('resp', resp);
 //   });
-
-getSampleData();
 
 // getVariable(2506, true);
 // getVariable(2525);

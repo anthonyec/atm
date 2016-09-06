@@ -1,0 +1,9 @@
+{
+  "test": {
+    "username": "root",
+    "password": "",
+    "database": "pyb_bots",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

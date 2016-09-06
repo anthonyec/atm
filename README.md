@@ -45,5 +45,7 @@ particle serial wifi
 ssh root@178.62.113.246
 ```
 
-
+## WiFi
+SSID: ATM_2.4G
+PASS: c0pb0trulez
 

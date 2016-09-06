@@ -1,4 +1,10 @@
 [
-  {"id": "household", "name": "Household" },
-  {"id": "life-expectancy", "name": "Life-expectancy"}
+  {"id": "life-expectancy", "name": "Life-expectancy"},
+  {"id": "eu-passport", "name": "Holders of EU passport"},
+  {"id": "age-over-60", "name": "People over 60"},
+  {"id": "heart-disease", "name": "Die of heart diseases"},
+  {"id": "population", "name": "Population"},
+  {"id": "fishing-industry", "name": "People in fishing industry"},
+  {"id": "people-part-time", "name": "People part-time"},
+  {"id": "works-home", "name": "Works from home"}
 ]

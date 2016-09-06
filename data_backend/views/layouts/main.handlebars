@@ -57,7 +57,7 @@
 
       var fetchDataForPostcode = function(datapoint, postcode) {
 
-        var url = '/api/v1/datapoints/' + datapoint + '/?postcode=' + postcode;
+        var url = '/api/1/datapoints/' + datapoint + '/?postcode=' + postcode;
         $.ajax({
           url: url,
           beforeSend: function() {
@@ -69,7 +69,7 @@
             $('.submit-btn').show();
           },
           success: function(data) {
-            $('.data-wrapper').html(data.value);
+            $('.data-wrapper').html(data);
           },
           error: function(xhr) {
             console.error(xhr);

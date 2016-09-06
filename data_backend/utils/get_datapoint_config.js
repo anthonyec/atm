@@ -1,9 +1,17 @@
+const { defaultProcessing } = require('./processing/default_processing');
+const { peopleAloneProcessing } = require('./processing/people_alone_processing');
+const { worksHomeProcessing } = require('./processing/works_home_processing');
+
 const getVarIdForDatapoint = function(datapoint) {
   switch(datapoint) {
     case 'household':
       return 8634;
     case 'life-expectancy':
       return 5781;
+    case 'people-alone':
+      return '1906,1907';
+    case 'works-home':
+      return '2307,2308';
     default:
       return '';
   }
@@ -25,16 +33,21 @@ const getAreaLevelForDatapoint = function(datapoint) {
   switch(datapoint) {
     case 'household':
     case 'life-expectancy':
+    case 'works-home':
       return 13;
     default:
       return 11;
   }
 }
 
-const getOperationsDatapoint = function(datapoint) {
+const getProcessingForDatapoint = function(datapoint) {
   switch(datapoint) {
+    case 'works-home':
+      return worksHomeProcessing;
+    case 'people-alone':
+      return peopleAloneProcessing;
     default:
-      return [];
+      return defaultProcessing;
   }
 }
 
@@ -42,7 +55,7 @@ exports.getDatapointConfig = function(datapoint) {
   //  return variableIds, areaLevel available, operations necessary
   const variableId = getVarIdForDatapoint(datapoint);
   const areaLevel = getAreaLevelForDatapoint(datapoint);
-  const operations = getOperationsDatapoint(datapoint);
+  const processing = getProcessingForDatapoint(datapoint);
 
-  return { variableId, areaLevel, operations };
+  return { variableId, areaLevel, processing };
 }

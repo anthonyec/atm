@@ -71,14 +71,21 @@ app.get('/api/v1/datapoints/:datapoint', function(req, res) {
       const variableId = datapointConfig.variableId;
       const baseUrl = getBaseUrl(req);
       const url = `${baseUrl}/api/v1/variables/${variableId}?areaId=${areaId}`;
+
+      console.log('url', url);
+
       fetchContent(url)
         .then((resp) => {
-          //  4) potentially do some operations on the fetched data
           const respObj = JSON.parse(resp);
-          res.json(respObj);
+
+          //  4) potentially do some operations on the fetched data
+          const processing = datapointConfig.processing;
+          const processed = processing(respObj);
+
+          res.json(processed);
         })
         .catch((err) => {
-
+          res.status(500).send({ error: `Error processing fetched data: ${ (err) ? err.toString() : 'Unknown error' }` });
         });
     })
     .catch((err) => {
@@ -102,15 +109,15 @@ app.get('/api/v1/variables/:varId', function(req, res) {
 
   //  varIds: 5781,5784
   //  areaId: 6275114
-  const variableId = req.params.varId;
+  const variableIds = req.params.varId;
   const areaId = req.query.areaId;
   const fields = (req.query.fields)? req.query.fields.split(',') : [];
 
-  const DATA_URL = `http://neighbourhood.statistics.gov.uk/NDE2/Deli/getTables?Areas=${areaId}&Variables=${variableId}`;
+  const DATA_URL = `http://neighbourhood.statistics.gov.uk/NDE2/Deli/getTables?Areas=${areaId}&Variables=${variableIds}`;
   fetchXmlContent(DATA_URL)
     .then((resp) => {
       try {
-        res.json(parseDataResponse(resp, fields));
+        res.json(parseDataResponse(resp, variableIds, fields));
       } catch(err) {
         res.status(500).send({ error: (err) ? err.toString() : 'Unknown error' });
       }

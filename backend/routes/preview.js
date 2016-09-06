@@ -5,7 +5,7 @@ const Particle = require('particle-api-js');
 const router  = express.Router();
 const particle = new Particle();
 
-const token = 'd36cc4af8d6f1c6ae094d07d447428748e3e53e0';
+const token = process.env.PARTICLE_TOKEN;
 
 router.get('/', function(req, res) {
   res.render('pages/preview');

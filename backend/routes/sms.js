@@ -4,14 +4,9 @@ const twilio = require('twilio');
 const postcode = require('../utils/postcode');
 
 const router  = express.Router();
-// const client = twilio(
-//   'ACe948f126472b3edeac8378ed89ea285c',
-//   'f38f35c73ffc1783596d7620b55461c0'
-// );
-
 const client = twilio(
-  'AC07d0a956bb2cf35496e83f642d002f64',
-  '12ca2465e702388bae692d8b19a3903b'
+  process.env.TWILIO_SID,
+  process.env.TWILIO_TOKEN
 );
 
 function addRequest() {
@@ -21,7 +16,7 @@ function addRequest() {
 
 function sendInvalidMessageTo (phoneNumber) {
   client.sendMessage({
-    from: '447403934123',
+    from: process.env.TWILIO_PHONE_NUMBER,
     to: phoneNumber,
     body: `Hey, that postcode is not valid UK postcode. Have another try`,
   });
@@ -30,7 +25,9 @@ function sendInvalidMessageTo (phoneNumber) {
 }
 
 router.get('/', function(req, res) {
-  res.render('pages/sms');
+  res.render('pages/sms', {
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER,
+  });
 });
 
 router.post('/', function(req, res) {

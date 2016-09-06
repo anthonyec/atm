@@ -29,18 +29,18 @@ app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 app.get('/', function (req, res) {
-  res.send(`Try ${getBaseUrl(req)}/api/v1/datapoints/household/?postcode=e84pp`);
+  res.send(`Try ${getBaseUrl(req)}/api/1/datapoints/household/?postcode=e84pp`);
 });
 
 /**
 *  API
 **/
 app.get('/api/v1', function (req, res) {
-  res.send(`e.g. ${getBaseUrl(req)}/api/v1/datapoints/household/?postcode=e84pp`);
+  res.send(`e.g. ${getBaseUrl(req)}/api/1/datapoints/household/?postcode=e84pp`);
 });
 
 //  datapoint route
-app.get('/api/v1/datapoints/:datapoint', function(req, res) {
+app.get('/api/1/datapoints/:datapoint', function(req, res) {
   //  validation
   if (!req.params.datapoint) {
     res.status(400).send({ error: 'Missing ":datapoint" part of query' });
@@ -70,7 +70,7 @@ app.get('/api/v1/datapoints/:datapoint', function(req, res) {
       //  3) fetch the actual data from variables endpoint
       const variableId = datapointConfig.variableId;
       const baseUrl = getBaseUrl(req);
-      const url = `${baseUrl}/api/v1/variables/${variableId}?areaId=${areaId}`;
+      const url = `${baseUrl}/api/1/variables/${variableId}?areaId=${areaId}`;
 
       console.log('url', url);
 
@@ -97,8 +97,8 @@ app.get('/api/v1/datapoints/:datapoint', function(req, res) {
 
 
 //  variables route
-//  e.g. http://localhost:3000/api/v1/variables/5784?areaId=6275114&fields=value,title,description
-app.get('/api/v1/variables/:varId', function(req, res) {
+//  e.g. http://localhost:3000/api/1/variables/5784?areaId=6275114&fields=value,title,description
+app.get('/api/1/variables/:varId', function(req, res) {
   //  validation
   if (!req.params.varId) {
     res.status(400).send({ error: 'Missing "varId" part of query' });

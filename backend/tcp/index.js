@@ -11,14 +11,14 @@ var server = net.createServer((socket) => {
 
   socket.on('data', (buffer) => {
     const id = buffer.toString().replace(/\n/g, '');
-    const text = fs.readFileSync(`template_${id}.hbs`).toString();
+    const text = fs.readFileSync(`./temp/${id}.hbs`).toString();
 
     formatLines(text).forEach((line) => {
       socket.write(new Buffer(line));
       socket.write(new Buffer('\n'));
     });
 
-    console.log(`[TCP] sent template_${id}.hbs to ${socket.remoteAddress}`);
+    console.log(`[TCP] sent ${id}.hbs to ${socket.remoteAddress}`);
     socket.destroy();
   });
 

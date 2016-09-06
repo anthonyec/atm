@@ -5,13 +5,26 @@ exports.heartDiseaseProcessing = function(data) {
   if (data) {
     const ids = ['7020','7024'];
 
+    const totalIds = ['7019', '7023'];
+
     const sum = ids.reduce((acc, id) => {
       const singleData = data[id]
       const newSum = acc + parseFloat(singleData);
       return newSum;
     }, 0);
 
-    result = Math.round(sum);
+    const totalSum = totalIds.reduce((acc, id) => {
+      const singleData = data[id]
+      const newSum = acc + parseFloat(singleData);
+      return newSum;
+    }, 0);
+
+    console.log('sum', sum, 'totalSum', totalSum);
+
+    const percentage = (sum / totalSum) * 100;
+    const percentageRounded = (Math.round(percentage * 1000) / 1000);
+
+    result = `${percentageRounded}%`;
   }
 
   return result;

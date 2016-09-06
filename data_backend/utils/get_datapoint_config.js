@@ -19,7 +19,7 @@ const getVarIdForDatapoint = function(datapoint) {
     case 'population':
       return 627;
     case 'heart-disease':
-      return '7020,7024';
+      return '7019,7020,7023,7024';
     case 'age-over-60':
       return 1991;
     case 'eu-passport':

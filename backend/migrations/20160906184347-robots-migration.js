@@ -1,7 +1,5 @@
 'use strict';
 
-// id, postcode, robot, phone_number, status, prediction, created_at
-
 module.exports = {
   up: function (queryInterface, Sequelize) {
     return queryInterface.createTable('robots', {
@@ -11,8 +9,10 @@ module.exports = {
         autoIncrement: true,
       },
       name: Sequelize.STRING,
-      photon_id: Sequelize.STRING,
-      photon_name: Sequelize.STRING,
+      photonId: Sequelize.STRING,
+      photonName: Sequelize.STRING,
+      createdAt: Sequelize.DATE,
+      updatedAt: Sequelize.DATE,
     });
   },
 

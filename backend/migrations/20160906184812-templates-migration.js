@@ -1,7 +1,5 @@
 'use strict';
 
-// id, robot_id, file_path
-
 module.exports = {
   up: function (queryInterface, Sequelize) {
     return queryInterface.createTable('templates', {
@@ -10,8 +8,9 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
-      robot_id: Sequelize.INTEGER,
-      file_path: Sequelize.STRING,
+      filePath: Sequelize.STRING,
+      createdAt: Sequelize.DATE,
+      updatedAt: Sequelize.DATE,
     });
   },
 

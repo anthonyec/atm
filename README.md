@@ -33,6 +33,7 @@ export PARTICLE_TOKEN=''
 export TWILIO_SID=''
 export TWILIO_TOKEN=''
 export TWILIO_PHONE_NUMBER=''
+export NODE_ENV='' # development | production
 ```
 
 ### SSH

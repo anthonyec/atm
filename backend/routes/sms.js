@@ -1,6 +1,7 @@
 const express = require('express');
 const twilio = require('twilio');
 
+const Request = require('../models/request');
 const postcode = require('../utils/postcode');
 
 const router  = express.Router();
@@ -8,11 +9,6 @@ const client = twilio(
   process.env.TWILIO_SID,
   process.env.TWILIO_TOKEN
 );
-
-function addRequest() {
-  console.log(`[SMS] valid`);
-  // add to request
-}
 
 function sendInvalidMessageTo (phoneNumber) {
   client.sendMessage({
@@ -51,7 +47,12 @@ router.post('/', function(req, res) {
     // do a search to see if it is really not valid
     code.autocomplete().then((results) => {
       if (results && body.length > 3) {
-        return addRequest();
+        const request = new Request({
+          postcode: body,
+          phoneNumber: From,
+        });
+
+        return request;
       }
 
       sendInvalidMessageTo(from);

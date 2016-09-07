@@ -6,8 +6,12 @@ var Robot = Bookshelf.Model.extend({
   tableName: 'robots',
   hasTimestamps: true,
 
-  requests: function() {
+  requests() {
     return this.hasMany('Request', 'robotId');
+  },
+}, {
+  getRequests() {
+    console.log('Get requests');
   },
 });
 

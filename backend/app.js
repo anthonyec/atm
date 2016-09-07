@@ -1,6 +1,5 @@
 const express = require('express');
 const exphbs  = require('express-handlebars');
-const Sequelize = require('sequelize');
 const bodyParser = require('body-parser');
 
 const tcp = require('./tcp');
@@ -12,12 +11,6 @@ const predictions  = require('./predictions');
 const test  = require('./routes/test');
 
 const app = express();
-const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  config
-);
 
 // Express Setup
 app.engine('.hbs', exphbs({

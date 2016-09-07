@@ -1,49 +1,32 @@
 const express = require('express');
-const models  = require('../models');
+
+const Request = require('../models/request');
+const Robot = require('../models/robot');
 
 const router  = express.Router();
 
-// models.Robot.create({
-//   name: 'cop',
-//   photonId: '3e0035000347343339373536',
-//   photonName: 'red',
+// Request.where({id: 1}).fetch({withRelated: ['robot']}).then(function(results) {
+//   console.log(results.toJSON());
+//   // console.log(results.related('robot').toJSON());
+// }).catch(function(err) {
+//   console.log(err);
+//   // return next(new Error(err));
 // });
 
-// models.Robot.create({
-//   name: 'doctor',
-//   photonId: '',
-//   photonName: '',
-// });
+Robot.where({id: 22}).fetch({withRelated: ['requests']}).then(function(results) {
+  console.log(results.toJSON());
+  // console.log(results.related('robot').toJSON());
+}).catch(function(err) {
+  console.log(err);
+  // return next(new Error(err));
+});
 
-// models.Robot.create({
-//   name: 'money',
-//   photonId: '',
-//   photonName: '',
-// });
 
-// models.Robot.create({
-//   name: 'prof',
-//   photonId: '',
-//   photonName: '',
-// });
-
-// models.Robot.findOne({
-//   where: {
-//     name: 'red',
-//   },
-// }).then((results) => {
-//   console.log(results);
+// Request.where({id: 1}).fetch().then(function(results) {
+//   console.log(results.toJSON());
 // });
 
 router.get('/', function(req, res) {
-  // models.Request.create({
-  //   postcode: 'SE20 8PJ',
-  //   phoneNumber: '+440000000000',
-  // }).then(function() {
-  //   console.log('wow');
-  // });
-
-
   res.sendStatus(200);
 });
 

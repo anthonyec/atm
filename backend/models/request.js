@@ -1,24 +1,16 @@
 'use strict';
 
-module.exports = function(sequelize, DataTypes) {
-  var Request = sequelize.define('Request', {
-    postcode: DataTypes.STRING,
-    phoneNumber: DataTypes.STRING,
-    status: {
-      type: DataTypes.STRING,
-      defaultValue: 'incomplete',
-    },
-    prediction: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-  }, {
-    classMethods: {
-      associate: function(models) {
-        Request.belongsTo(models.Robot);
-      }
-    }
-  });
+const Bookshelf = require('../config/database');
 
-  return Request;
-};
+require('./robot');
+
+var Request = Bookshelf.Model.extend({
+  tableName: 'requests',
+  hasTimestamps: true,
+
+  robot: function() {
+    return this.belongsTo('Robot', 'robotId');
+  },
+});
+
+module.exports = Bookshelf.model('Request', Request);

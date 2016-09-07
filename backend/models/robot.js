@@ -1,17 +1,16 @@
 'use strict';
 
-module.exports = function(sequelize, DataTypes) {
-  var Robot = sequelize.define('Robot', {
-    name: DataTypes.STRING,
-    photonId: DataTypes.STRING,
-    photonName: DataTypes.STRING,
-  }, {
-    classMethods: {
-      associate: function(models) {
-        Robot.hasMany(models.Request);
-      }
-    }
-  });
+const Bookshelf = require('../config/database');
 
-  return Robot;
-};
+require('./request');
+
+var Robot = Bookshelf.Model.extend({
+  tableName: 'robots',
+  hasTimestamps: true,
+
+  requests: function() {
+    return this.hasMany('Request', 'robotId');
+  },
+});
+
+module.exports = Bookshelf.model('Robot', Robot);

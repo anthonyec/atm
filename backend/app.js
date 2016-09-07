@@ -2,7 +2,7 @@ const express = require('express');
 const exphbs  = require('express-handlebars');
 const bodyParser = require('body-parser');
 
-const tcp = require('./tcp');
+const tcp = require('./services/tcp');
 const config = require('./config/config.json');
 const routes = require('./routes/index');
 const sms  = require('./routes/sms');

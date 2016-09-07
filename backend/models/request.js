@@ -1,6 +1,4 @@
-'use strict';
-
-const Bookshelf = require('../config/database');
+const Bookshelf = require('../services/database');
 
 require('./robot');
 

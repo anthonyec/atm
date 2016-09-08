@@ -12,7 +12,7 @@ var Request = Bookshelf.Model.extend({
   hasTimestamps: true,
 
   robot() {
-    return this.belongsTo('Robot', 'robot_id');
+    return this.belongsTo('Robot', 'robotId');
   },
 
   incomplete() {

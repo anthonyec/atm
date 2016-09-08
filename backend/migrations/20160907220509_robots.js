@@ -4,7 +4,6 @@ exports.up = function(knex, Promise) {
     table.string('name');
     table.string('photonId');
     table.string('photonName');
-    table.timestamps();
   });
 };
 

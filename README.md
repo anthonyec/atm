@@ -14,6 +14,12 @@ Use `netcat` to test simple server communcation
 $ netcat <IP_ADDRESS> <PORT> <MESSAGE>
 ```
 
+Use cURL to simulate SMS messages
+
+```sh
+$ curl -X POST localhost:4000/sms --data 'From=+4477000000000&Body=EC2A 3AR'
+```
+
 ### Photon Device Modes
 https://docs.particle.io/guide/getting-started/modes/core/
 

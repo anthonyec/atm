@@ -2,6 +2,7 @@ const express = require('express');
 const twilio = require('twilio');
 
 const Request = require('../models/request');
+const requestManager = require('../utils/request_manager')();
 const postcode = require('../utils/postcode');
 
 const router  = express.Router();
@@ -9,16 +10,6 @@ const client = twilio(
   process.env.TWILIO_SID,
   process.env.TWILIO_TOKEN
 );
-
-function sendInvalidMessageTo (phoneNumber) {
-  client.sendMessage({
-    from: process.env.TWILIO_PHONE_NUMBER,
-    to: phoneNumber,
-    body: `Hey, that postcode is not valid UK postcode. Have another try`,
-  });
-
-  console.log(`[SMS] invalid`);
-}
 
 router.get('/', function(req, res) {
   res.render('pages/sms', {
@@ -41,25 +32,47 @@ router.post('/', function(req, res) {
 
   code.isValid().then((valid) => {
     if (valid) {
-      return addRequest();
+      const data = {
+        postcode: body,
+        phoneNumber: from,
+      };
+
+      // TODO: clean up these callback hells
+      return requestManager.createNewRequest(data).then((request) => {
+        const twiml = new twilio.TwimlResponse();
+        const id = request.get('id');
+
+        twiml.message(`Your prediction number is ${id}`);
+        res.writeHead(200, {'Content-Type': 'text/xml'});
+        res.end(twiml.toString());
+      });
     }
 
     // do a search to see if it is really not valid
     code.autocomplete().then((results) => {
       if (results && body.length > 3) {
-        const request = new Request({
+        const data = {
           postcode: body,
-          phoneNumber: From,
-        });
+          phoneNumber: from,
+        };
 
-        return request;
+        return requestManager.createNewRequest(data).then((request) => {
+          const twiml = new twilio.TwimlResponse();
+          const id = request.get('id');
+
+          twiml.message(`Your prediction number is ${id}`);
+          res.writeHead(200, {'Content-Type': 'text/xml'});
+          res.end(twiml.toString());
+        });
       }
 
-      sendInvalidMessageTo(from);
+      const twiml = new twilio.TwimlResponse();
+
+      twiml.message(`Hey, that postcode is not valid UK postcode. Have another try`);
+      res.writeHead(200, {'Content-Type': 'text/xml'});
+      res.end(twiml.toString());
     });
   });
-
-  res.sendStatus(200);
 });
 
 module.exports = router;

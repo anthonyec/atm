@@ -7,7 +7,11 @@ var Robot = Bookshelf.Model.extend({
   hasTimestamps: true,
 
   requests() {
-    return this.hasMany('Request', 'robotId');
+    return this.hasMany('Request', 'robot_id');
+  },
+
+  templates() {
+    return this.hasMany('Template', 'robotId');
   },
 }, {
   getRequests() {

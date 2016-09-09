@@ -2,7 +2,7 @@ const express = require('express');
 const twilio = require('twilio');
 
 const Request = require('../models/request');
-const requestManager = require('../utils/request_manager')();
+const requestManager = require('../utils/request_manager');
 const postcode = require('../utils/postcode');
 
 const router  = express.Router();
@@ -18,7 +18,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-  const body = req.body.Body;
+  const body = req.body.Body.replace(/[^\w\s]/gi, '');
   const from = req.body.From;
   const to = req.body.To;
 
@@ -26,7 +26,7 @@ router.post('/', function(req, res) {
     return res.sendStatus(400);
   }
 
-  console.log(`[SMS] received from ${from}`);
+  console.log(`[SMS] received from ${from}: ${body}`);
 
   const code = postcode(body);
 

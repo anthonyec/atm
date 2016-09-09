@@ -39,8 +39,6 @@ function RequestManager() {
         const lastRobotId = values[1].get('robotId');
         const lastQueryRobotId = values[2].get('robotId');
 
-        console.log(values[2]);
-
         // Return an array of robots that don't use the ids from the latest
         // request or the latest request by specific query
         const suitableRobots = _.reject(robots, (robot) => {

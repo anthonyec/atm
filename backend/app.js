@@ -49,7 +49,7 @@ const options = {
 };
 const data = {
   jobId: 'job-id-1',
-  phoneName: 'phone-number-1',
+  phoneNumber: 'phone-number-1',
   robotName: 'robot-1',
 };
 

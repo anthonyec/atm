@@ -46,7 +46,7 @@ function fetchFile(filePath) {
 }
 
 
-function generatePrediction(postcode, options, data) {
+function generatePrediction(postcode, options, headerFooterData) {
   return new Promise((resolve, reject) => {
 
     const { endpoint, templatePath, controller } = options;
@@ -61,7 +61,7 @@ function generatePrediction(postcode, options, data) {
     //  3) register partials for header and footer
     hbs.registerPartials(`${__dirname}/views/partials`);
 
-    //  wait for everything to load
+    //  4) wait for everything to load
     Promise.all([apiDataPromise, predictionTmpFilePromise])
       .then((values) => {
 
@@ -71,23 +71,17 @@ function generatePrediction(postcode, options, data) {
           //  compile template
           const template = hbs.compile(predictionTmp);
 
-          // data here is the value returned from the data endpoint above
-          const tmpData = controller(apiData);
+          // do additional logic on data from API
+          const controllerData = controller(apiData);
+
+          //  combine data from API with data that are used for
+          const tmpData = Object.assign({}, controllerData, headerFooterData);
+
+          // pass all data to template to get final string
           const predictionString = template(tmpData);
 
+          //  all done
           resolve(predictionString);
-
-          //  run controller to modify api data and generate anything dynamic for template
-          // const dynamicTemplateData = options.controller(apiData)
-
-          // //  merge dynamic body data and data for header and footer
-          // const templateData = dynamicTempateData.merge(data);
-
-
-          // //  render template and done
-          // const render = template(template, templateData);
-          // return render;
-
         })
         .catch((err) => {
           reject(err);

@@ -1,16 +1,3 @@
-
-// options = {
-//   endpoint,
-//   name,
-//   templatePath,
-//   controler,
-// }
-// data = {
-//   jobId,
-//   phoneNumber,
-//   robotName
-// }
-
 const request = require('request');
 const fs = require('fs');
 const hbs = require('hbs');

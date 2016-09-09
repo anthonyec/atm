@@ -60,9 +60,10 @@ router.post('/', (req, res) => {
     // Else send a text back using the invalid template
     res.render('sms/invalid', { layout: false });
   }).catch(() => {
-    console.log('[SMS] an error occured');
+    console.log('[SMS] an error occurred');
   });
 
+  console.log(`[SMS] message received from ${from}`);
 });
 
 module.exports = router;

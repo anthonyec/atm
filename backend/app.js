@@ -34,7 +34,7 @@ app.use('/sms', sms);
 app.use('/preview', preview);
 app.use('/predictions', predictions);
 
-app.listen(4000, function () {
+app.listen(process.env.PORT || 4000, function () {
   console.log('[APP] server started: port 4000');
 });
 

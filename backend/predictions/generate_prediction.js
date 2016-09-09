@@ -22,10 +22,12 @@ function fetchApiData(postcode, endpointName) {
 
 function fetchFile(filePath) {
   return new Promise((resolve, reject) => {
+    console.log('filePath', filePath);
     fs.readFile(filePath, 'utf8', function(err, contents) {
       if (!err) {
         resolve(contents);
       } else {
+        console.log('fetchFile reject', err);
         reject(err);
       }
     });
@@ -45,31 +47,37 @@ function generatePrediction(postcode, options, headerFooterData) {
     const predictionTmpUrl = options.templatePath;
     const predictionTmpFilePromise = fetchFile(predictionTmpUrl);
 
+    console.log('endpoint', endpoint);
+
     //  3) register partials for header and footer
     hbs.registerPartials(`${__dirname}/views/partials`);
 
     //  4) wait for everything to load
     Promise.all([apiDataPromise, predictionTmpFilePromise])
-      .then((values) => {
+        .then((values) => {
 
-          const apiData = values[0];
-          const predictionTmp = values[1];
+          try {
+            const apiData = values[0];
+            const predictionTmp = values[1];
 
-          //  compile template
-          const template = hbs.compile(predictionTmp);
+            //  compile template
+            const template = hbs.compile(predictionTmp);
 
-          // do additional logic on data from API
-          const controllerData = controller(apiData);
+            // do additional logic on data from API
+            const controllerData = controller(apiData);
 
-          //  combine data from API with data that are used for header and
-          //  footer partials
-          const tmpData = Object.assign({}, controllerData, headerFooterData);
+            //  combine data from API with data that are used for header and
+            //  footer partials
+            const tmpData = Object.assign({}, controllerData, headerFooterData);
 
-          // pass all data to template to get final string
-          const predictionString = template(tmpData);
+            // pass all data to template to get final string
+            const predictionString = template(tmpData);
 
-          //  all done
-          resolve(predictionString);
+            //  all done
+            resolve(predictionString);
+          } catch(err) {
+            reject(err);
+          }
         })
         .catch((err) => {
           reject(err);

@@ -24,7 +24,12 @@ router.get('/:name', (req, res) => {
 
   const predictionText = generatePrediction(postcode, predictionRow, data)
     .then((resp) => {
-      res.send(resp);
+      const htmlString = resp.replace(/(?:\r\n|\r|\n)/g, '<br />');
+      res.send(htmlString);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send(err);
     });
 });
 

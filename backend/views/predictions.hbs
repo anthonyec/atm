@@ -47,7 +47,8 @@
         $('.data-wrapper').html(data);
       },
       error: function(xhr) {
-        console.error(xhr);
+        var error = 'Error, probably invalid postcode or something';
+        $('.data-wrapper').html(error);
       }
     })
 
@@ -69,7 +70,7 @@
 <form class="test-form">
   <select name="prediction">
     {{#each predictions}}
-      <option value="{{this.endpoint}}">{{this.endpoint}}</option>
+      <option value="{{@key}}">{{@key}}</option>
     {{/each}}
   </select>
   <input name="postcode" placeholder="Postcode (e.g. E8 4PP)" />

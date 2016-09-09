@@ -5,8 +5,8 @@ const postcode = require('../utils/postcode');
 
 const router  = express.Router();
 const client = twilio(
-  process.env.TWILIO_SID,
-  process.env.TWILIO_TOKEN
+  process.env.TWILIO_SID || '123', // add some fake number if env not set
+  process.env.TWILIO_TOKEN || '123' // add some fake number if env not set
 );
 
 function addRequest() {

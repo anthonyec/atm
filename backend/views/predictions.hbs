@@ -1,0 +1,79 @@
+<style>
+  .test-form {
+    padding: 20px;
+
+  }
+    .test-form select,
+    .test-form button,
+    .test-form input, {
+      font-size: 16px;
+    }
+
+    .test-form select,
+    .test-form input {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .test-form input {
+      padding: 5px 10px;
+    }
+
+    .test-form .data-wrapper {
+      margin-top: 20px;
+    }
+
+    .test-form .fetching-notice {
+      display: none;
+    }
+</style>
+<script src="../jquery.min.js"></script>
+<script>
+
+  var fetchPredictionForPostcode = function(prediction, postcode) {
+
+    var url = '/predictions/' + prediction + '/?postcode=' + postcode;
+    $.ajax({
+      url: url,
+      beforeSend: function() {
+        $('.fetching-notice').show();
+        $('.submit-btn').hide();
+      },
+      complete: function() {
+        $('.fetching-notice').hide();
+        $('.submit-btn').show();
+      },
+      success: function(data) {
+        $('.data-wrapper').html(data);
+      },
+      error: function(xhr) {
+        console.error(xhr);
+      }
+    })
+
+  };
+
+  $(document).ready(function() {
+    //  test page
+    $('form').on('submit', function(evt) {
+      evt.preventDefault();
+
+      var prediction = $('[name=prediction]').val();
+      var postcode = $('[name=postcode]').val();
+
+      fetchPredictionForPostcode(prediction, postcode)
+    });
+  });
+</script>
+
+<form class="test-form">
+  <select name="prediction">
+    {{#each predictions}}
+      <option value="{{this.endpoint}}">{{this.endpoint}}</option>
+    {{/each}}
+  </select>
+  <input name="postcode" placeholder="Postcode (e.g. E8 4PP)" />
+  <button type="submit" class="submit-btn">Go!</button>
+  <span class="fetching-notice">Fetching...</span>
+  <div class="data-wrapper"></div>
+</form>

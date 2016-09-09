@@ -5,11 +5,14 @@ const { ratPoisonProcessing } = require('./processing/rat_poison_processing');
 const { heartDiseaseProcessing } = require('./processing/heart_disease_processing');
 const { euPassportProcessing } = require('./processing/eu_passport_processing');
 const { lifeExpectancyProcessing } = require('./processing/life_expectancy_processing');
+const { stoleMobilePhonesProcessing } = require('./processing/stolen_mobile_phones_processing');
 const { peopleAloneProcessing } = require('./processing/people_alone_processing');
 const { worksHomeProcessing } = require('./processing/works_home_processing');
 
 const getVarIdForDatapoint = function(datapoint) {
   switch(datapoint) {
+    case 'stolen-mobile-phones':
+      return '5781,5784';
     case 'people-part-time':
       return 8778;
     case 'fishing-industry':

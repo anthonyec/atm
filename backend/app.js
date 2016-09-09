@@ -8,6 +8,7 @@ const config = require('./config/config.json');
 const routes = require('./routes/index');
 const sms  = require('./routes/sms');
 const preview  = require('./routes/preview');
+const predictions  = require('./predictions');
 
 const app = express();
 const sequelize = new Sequelize(
@@ -31,9 +32,32 @@ app.use(bodyParser.json());
 app.use('/', routes);
 app.use('/sms', sms);
 app.use('/preview', preview);
+app.use('/predictions', predictions);
 
 app.listen(4000, function () {
   console.log('[APP] server started: port 4000');
 });
+
+
+/** TEMP - example of using generatePrediction **/
+const generatePrediction = require('./predictions/generate_prediction.js');
+const tempData = require('./predictions/temp_data').predictions;
+
+const postcode = 'E84PP';
+const data = {
+  jobId: 'job-id-1',
+  phoneNumber: 'phone-number-1',
+  robotName: 'robot-1',
+};
+
+generatePrediction(postcode, tempData['giraffe'], data)
+  .then((prediction) => {
+    console.log('Prediction generated!');
+    console.log(prediction);
+  })
+  .catch((err) => {
+    console.error(err.toString());
+  });
+
 
 module.exports = app;

@@ -7,72 +7,62 @@ const postcode = require('../utils/postcode');
 
 const router  = express.Router();
 const client = twilio(
-  process.env.TWILIO_SID,
-  process.env.TWILIO_TOKEN
+  process.env.TWILIO_SID || '',
+  process.env.TWILIO_TOKEN || ''
 );
 
-router.get('/', function(req, res) {
+router.get('/', (req, res) => {
   res.render('pages/sms', {
-    phoneNumber: process.env.TWILIO_PHONE_NUMBER,
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER || '',
   });
 });
 
-router.post('/', function(req, res) {
+router.post('/', (req, res) => {
   const body = req.body.Body.replace(/[^\w\s]/gi, '');
   const from = req.body.From;
   const to = req.body.To;
+  const data = {
+    postcode: body,
+    phoneNumber: from,
+  };
 
   if (!from) {
     return res.sendStatus(400);
   }
 
-  console.log(`[SMS] received from ${from}: ${body}`);
-
   const code = postcode(body);
 
-  code.isValid().then((valid) => {
-    if (valid) {
-      const data = {
-        postcode: body,
-        phoneNumber: from,
-      };
+  Promise.all([
+    // Check if the postcode is a full valid postcode, Eg: EC2A 3AR
+    code.isValid(),
 
-      // TODO: clean up these callback hells
+    // Check if the postcode can be autocompleted, Eg: EC2 could be EC2A 3AR
+    // If it can it will return a list of possible postcodes
+    code.autocomplete(),
+  ]).then((values) => {
+    const isFullPostcode = values[0];
+
+    // Check if autocompleted returned a list of possible postcodes.
+    // Also check if postcode is bigger than 3, otherwise a SMS like "S" would
+    // return all postcodes starting with "S" and would be valid
+    const isPartialPostcode = values[1] && body.length > 3;
+
+    if (isFullPostcode || isPartialPostcode) {
+      // Add a new request to the database
       return requestManager.createNewRequest(data).then((request) => {
-        const twiml = new twilio.TwimlResponse();
         const id = request.get('id');
 
-        twiml.message(`Your prediction number is ${id}`);
-        res.writeHead(200, {'Content-Type': 'text/xml'});
-        res.end(twiml.toString());
+        // And send a text back using the valid template
+        res.render('sms/valid', { id, layout: false });
       });
     }
 
-    // do a search to see if it is really not valid
-    code.autocomplete().then((results) => {
-      if (results && body.length > 3) {
-        const data = {
-          postcode: body,
-          phoneNumber: from,
-        };
-
-        return requestManager.createNewRequest(data).then((request) => {
-          const twiml = new twilio.TwimlResponse();
-          const id = request.get('id');
-
-          twiml.message(`Your prediction number is ${id}`);
-          res.writeHead(200, {'Content-Type': 'text/xml'});
-          res.end(twiml.toString());
-        });
-      }
-
-      const twiml = new twilio.TwimlResponse();
-
-      twiml.message(`Hey, that postcode is not valid UK postcode. Have another try`);
-      res.writeHead(200, {'Content-Type': 'text/xml'});
-      res.end(twiml.toString());
-    });
+    // Else send a text back using the invalid template
+    res.render('sms/invalid', { layout: false });
+  }).catch(() => {
+    console.log('[SMS] an error occured');
   });
+
 });
 
 module.exports = router;

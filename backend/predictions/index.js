@@ -8,7 +8,7 @@ const generatePrediction = require('./generate_prediction.js');
 const predictions = require('./temp_data').predictions;
 
 router.get('/', (req, res) => {
-  res.render('predictions', {});
+  res.render('predictions', { predictions });
 });
 
 router.get('/:name', (req, res) => {

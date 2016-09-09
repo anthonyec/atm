@@ -61,7 +61,8 @@ function generatePrediction(postcode, options, headerFooterData) {
           // do additional logic on data from API
           const controllerData = controller(apiData);
 
-          //  combine data from API with data that are used for
+          //  combine data from API with data that are used for header and
+          //  footer partials
           const tmpData = Object.assign({}, controllerData, headerFooterData);
 
           // pass all data to template to get final string

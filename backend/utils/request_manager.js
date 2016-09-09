@@ -12,7 +12,7 @@ function RequestManager() {
   function fetchLatestRequest(query = {}) {
     return Request.forge()
       .where(query)
-      .query('orderBy', 'id', 'desc')
+      .query('orderBy', 'created_at', 'desc')
       .fetch();
   }
 
@@ -39,6 +39,8 @@ function RequestManager() {
         const lastRobotId = values[1].get('robotId');
         const lastQueryRobotId = values[2].get('robotId');
 
+        console.log(values[2]);
+
         // Return an array of robots that don't use the ids from the latest
         // request or the latest request by specific query
         const suitableRobots = _.reject(robots, (robot) => {
@@ -57,7 +59,7 @@ function RequestManager() {
       phoneNumber: options.phoneNumber,
     };
 
-    return getRandomRobot().then((robot) => {
+    return getRandomRobot(rejectQuery).then((robot) => {
       const robotId = robot.id;
       const request = new Request(Object.assign({}, options, { robotId }));
       return request.save();

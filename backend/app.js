@@ -8,7 +8,6 @@ const routes = require('./routes/index');
 const sms  = require('./routes/sms');
 const preview  = require('./routes/preview');
 const predictions  = require('./predictions');
-const test  = require('./routes/test');
 
 const app = express();
 
@@ -27,7 +26,6 @@ app.use('/', routes);
 app.use('/sms', sms);
 app.use('/preview', preview);
 app.use('/predictions', predictions);
-app.use('/test', test);
 
 app.listen(4000, function () {
   console.log('[APP] server started: port 4000');

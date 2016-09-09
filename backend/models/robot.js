@@ -1,22 +1,22 @@
-const Request = require('./request');
+const Bookshelf = require('../services/database');
 
-const Robot = sequelize.define('robot', {
-  name: {
-    type: Sequelize.STRING,
+require('./request');
+
+var Robot = Bookshelf.Model.extend({
+  tableName: 'robots',
+  hasTimestamps: true,
+
+  requests() {
+    return this.hasMany('Request', 'robotId');
   },
-  photonId: {
-    type: Sequelize.STRING,
-    field: 'photon_id',
-  },
-  photonName: {
-    type: Sequelize.STRING,
-    field: 'photon_name',
+
+  templates() {
+    return this.hasMany('Template', 'robotId');
   },
 }, {
-  freezeTableName: true,
-  timestamps: true,
+  getRequests() {
+    console.log('Get requests');
+  },
 });
 
-Robot.hasMany(Request);
-
-module.exports = Robot;
+module.exports = Bookshelf.model('Robot', Robot);

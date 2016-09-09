@@ -1,72 +1,68 @@
-const _ = require('lodash'); // Couldn't use lodash/method here for some reason
-const waterfall = require('async/waterfall');
+const _ = require('lodash');
 
 const Request = require('../models/request');
 const Robot = require('../models/robot');
 
-function RequestManager(postcode) {
+function RequestManager() {
+  // Public methods
   return({
     createNewRequest,
   });
 
+  function fetchLatestRequest(query = {}) {
+    return Request.forge()
+      .where(query)
+      .query('orderBy', 'id', 'desc')
+      .fetch();
+  }
+
+  function fetchRobots() {
+    return Robot.forge().fetchAll();
+  }
+
   function getRandomRobot(rejectQuery) {
     return new Promise((resolve, reject) => {
-      waterfall([
-        // Find robotId of most recent request
-        (callback) => {
-          Request.forge().query('orderBy', 'id', 'desc').fetch().then((request) => {
-            callback(null, request.get('robotId'));
-          });
-        },
+      Promise.all([
+        // Fetch all the robots
+        fetchRobots(),
 
-        // Find robotId of most recent request by the phone number
-        (requestRobotId, callback) => {
-          Request.where(rejectQuery).query('orderBy', 'id', 'desc').fetch().then((request) => {
-            const robotId = request ? request.get('robotId') : null;
-            callback(null, requestRobotId, robotId);
-          });
-        },
+        // Fetch the latest request submitted by anyone
+        fetchLatestRequest(),
 
-        (requestRobotId, phoneRobotId, callback) => {
-          // Select the robot that is not in the previous request or requested by the
-          // phone number before. If the phoneRobotId returns null then this will work
-          // because it will just reject ids that are null
-          Robot.forge().fetchAll().then((collection) => {
-            const json = collection.toJSON();
+        // Fetch the latest request specific to a query. In this use case
+        // we will fetch one with a specific phoneNumber. Eg: {phoneNumber: ''}
+        fetchLatestRequest(rejectQuery),
+      ]).then((values) => {
+        const robots = values[0].toJSON();
 
-            const suitableRobots = _.reject(json, (robot) => {
-              return robot.id === requestRobotId || robot.id === phoneRobotId;
-            });
+        // Get robotIds from both types of latest requests
+        const lastRobotId = values[1].get('robotId');
+        const lastQueryRobotId = values[2].get('robotId');
 
-            // Pick the random robot from the suitable candidates
-            callback(null, _.sample(suitableRobots));
-          });
-        },
-      ], (err, results) => {
-        if (err) {
-          return reject(err);
-        }
+        // Return an array of robots that don't use the ids from the latest
+        // request or the latest request by specific query
+        const suitableRobots = _.reject(robots, (robot) => {
+          return robot.id === lastRobotId || robot.id === lastQueryRobotId;
+        });
 
-        resolve(results)
-      });
+        // Randomly return a robot from the suitable candidates
+        const randomRobot = _.sample(suitableRobots);
+        resolve(randomRobot);
+      }).catch(reject);
     });
   }
 
   function createNewRequest(options) {
-    return new Promise((resolve, reject) => {
-      const rejectQuery = {
-        phoneNumber: options.phoneNumber,
-      };
+    const rejectQuery = {
+      phoneNumber: options.phoneNumber,
+    };
 
-      getRandomRobot(rejectQuery).then((robot) => {
-        const data = Object.assign({}, options, {
-          robotId: robot.id,
-        })
-        const request = new Request(data);
-        request.save().then(resolve).catch(reject);
-      });
+    return getRandomRobot().then((robot) => {
+      const robotId = robot.id;
+      const request = new Request(Object.assign({}, options, { robotId }));
+      return request.save();
     });
   }
 }
 
-module.exports = RequestManager;
+module.exports = RequestManager();

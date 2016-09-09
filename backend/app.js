@@ -10,6 +10,7 @@ const preview  = require('./routes/preview');
 const predictions  = require('./predictions');
 
 const app = express();
+const streamer = tcp();
 
 // Express Setup
 app.engine('.hbs', exphbs({
@@ -29,6 +30,10 @@ app.use('/predictions', predictions);
 
 app.listen(4000, function () {
   console.log('[APP] server started: port 4000');
+});
+
+streamer.listen(2000, () => {
+  console.log('[TCP] server started: port 2000');
 });
 
 /** TEMP - example of using generatePrediction **/

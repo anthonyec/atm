@@ -1,7 +1,6 @@
 const express = require('express');
 const twilio = require('twilio');
 
-const Request = require('../models/request');
 const requestManager = require('../utils/request_manager');
 const postcode = require('../utils/postcode');
 

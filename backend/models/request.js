@@ -1,20 +1,32 @@
-const Request = sequelize.define('request', {
-  postcode: {
-    type: Sequelize.STRING,
+const Bookshelf = require('../services/database');
+const Robot = require('./robot');
+
+const consts = {
+  INCOMPLETE: 'INCOMPLETE',
+  PRINTING: 'PRINTING',
+  COMPLETE: 'COMPLETE',
+};
+
+var Request = Bookshelf.Model.extend({
+  tableName: 'requests',
+  hasTimestamps: true,
+
+  robot() {
+    return this.belongsTo('Robot', 'robotId');
   },
-  phoneNumber: {
-    type: Sequelize.STRING,
-    field: 'phone_number',
+
+  incomplete() {
+    console.log(consts.INCOMPLETE);
   },
-  status: {
-    type: Sequelize.BOOLEAN,
+
+  printing() {
+    console.log(consts.PRINTING);
   },
-  robot_id: {
-    type: Sequelize.INTEGER,
+
+  complete() {
+    console.log(consts.COMPLETE);
   },
-}, {
-  freezeTableName: true,
-  timestamps: true,
 });
 
-module.exports = Request;
+module.exports = Bookshelf.model('Request', Request);
+module.exports.consts = consts;

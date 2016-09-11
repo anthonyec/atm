@@ -15,16 +15,19 @@ var Request = Bookshelf.Model.extend({
     return this.belongsTo('Robot', 'robotId');
   },
 
-  incomplete() {
-    console.log(consts.INCOMPLETE);
+  setStatusIncomplete() {
+    this.set('status', consts.INCOMPLETE);
+    return this.save();
   },
 
-  printing() {
-    console.log(consts.PRINTING);
+  setStatusPrinting() {
+    this.set('status', consts.PRINTING);
+    return this.save();
   },
 
-  complete() {
-    console.log(consts.COMPLETE);
+  setStatusComplete() {
+    this.set('status', consts.COMPLETE);
+    return this.save();
   },
 });
 

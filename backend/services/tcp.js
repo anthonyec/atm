@@ -1,21 +1,36 @@
 const fs = require('fs');
 const net = require('net');
 const dns = require('dns');
+
 const formatLines = require('../utils/format_lines.js');
+const Receipt = require('../models/receipt');
 
-const server = net.createServer((socket) => {
-  socket.on('data', (buffer) => {
-    const id = buffer.toString().replace(/\n/g, '');
-    const text = fs.readFileSync(`./temp/${id}.hbs`).toString();
+function handleReceiveData(buffer) {
+  const id = buffer.toString().replace(/\n/g, '');
 
-    formatLines(text).forEach((line) => {
-      socket.write(new Buffer(line));
-      socket.write(new Buffer('\n'));
+  Receipt.where({ id }).fetch({ withRelated: ['request'] }).then((receipt) => {
+    const output = receipt.get('output');
+    const request = receipt.related('request');
+
+    if (request.id) {
+      request.setStatusPrinting();
+    }
+
+    formatLines(output).forEach((line) => {
+      this.write(new Buffer(line));
+      this.write(new Buffer('\n'));
     });
 
-    console.log(`[TCP] sent ${id}.hbs to ${socket.remoteAddress}`);
-    socket.destroy();
+    console.log(`[TCP] receipt ${id} to ${this.remoteAddress}`);
+  }).catch(() => {
+    console.log('[TCP] error fetching receipt');
+  }).finally(() => {
+    this.destroy();
   });
+}
+
+const server = net.createServer((socket) => {
+  socket.on('data', handleReceiveData);
 
   socket.on('error', (err) => {
     if (err.code == 'ECONNRESET') {

@@ -10,12 +10,8 @@ var Robot = Bookshelf.Model.extend({
     return this.hasMany('Request', 'robotId');
   },
 
-  templates() {
-    return this.hasMany('Template', 'robotId');
-  },
-}, {
-  getRequests() {
-    console.log('Get requests');
+  predictions() {
+    return this.hasMany('Prediction', 'predictionId');
   },
 });
 

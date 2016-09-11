@@ -25,68 +25,80 @@ const populationController = require('./controllers/population');
 
 exports.predictions = {
   //  astrologer
-  'astrologer-people-alone': {
+  'people-alone': {
+    robotId: 'astrologer',
     endpoints: 'people-alone',
     templatePath: 'predictions/views/predictions/people_alone.hbs',
     controller: peopleAloneController.controller
   },
-  'astrologer-jupiter': {
+  'jupiter': {
+    robotId: 'astrologer',
     endpoints: 'weekly-income,heart-disease,commute-over-20',
     templatePath: 'predictions/views/predictions/jupiter.hbs',
     controller: jupiterController.controller
   },
-  'astrologer-mars': {
+  'mars': {
+    robotId: 'astrologer',
     endpoints: 'area-road,work-admin,population',
     templatePath: 'predictions/views/predictions/mars.hbs',
     controller: marsController.controller
   },
 
   //  banker
-  'banker-make-money': {
+  'make-money': {
+    robotId: 'banker',
     endpoints: 'life-expectancy',
     templatePath: 'predictions/views/predictions/make_money.hbs',
     controller: makeMoneyController.controller
   },
-  'banker-works-home': {
+  'works-home': {
+    robotId: 'banker',
     endpoints: 'works-home',
     templatePath: 'predictions/views/predictions/works_home.hbs',
     controller: worksHomeController.controller
   },
-  'banker-giraffe': {
+  'giraffe': {
+    robotId: 'banker',
     endpoints: 'life-expectancy',
     templatePath: 'predictions/views/predictions/giraffe.hbs',
     controller: giraffeController.controller
   },
 
   //  crime
-  'crime-rat-poison': {
+  'rat-poison': {
+    robotId: 'crime',
     endpoints: 'yearly-income',
     templatePath: 'predictions/views/predictions/rat_poison.hbs',
     controller: ratPoisonController.controller
   },
-  'crime-crimes': {
+  'crimes': {
+    robotId: 'crime',
     endpoints: 'crimes',
     templatePath: 'predictions/views/predictions/crimes.hbs',
     controller: crimesController.controller
   },
-  'crimes-stolen-phones': {
+  'stolen-phones': {
+    robotId: 'crime',
     endpoints: 'life-expectancy',
     templatePath: 'predictions/views/predictions/stolen_phones.hbs',
     controller: stolenPhonesController.controller
   },
 
   //  doctor
-  'doctor-eu-passports': {
+  'eu-passports': {
+    robotId: 'doctor',
     endpoints: 'eu-passports',
     templatePath: 'predictions/views/predictions/eu_passports.hbs',
     controller: euPassportsController.controller
   },
-  'doctor-age-over-60': {
+  'age-over-60': {
+    robotId: 'doctor',
     endpoints: 'age-over-60',
     templatePath: 'predictions/views/predictions/age_over_60.hbs',
     controller: ageOver60Controller.controller
   },
-  'doctor-ebola': {
+  'ebola': {
+    robotId: 'doctor',
     endpoints: 'population',
     templatePath: 'predictions/views/predictions/ebola.hbs',
     controller: populationController.controller

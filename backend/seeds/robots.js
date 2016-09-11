@@ -2,25 +2,25 @@ const robots = [
   {
     id: 1,
     name: 'cop',
-    photonId: '3e0035000347343339373536',
+    deviceId: '3e0035000347343339373536',
     photonName: 'blue',
   },
   {
     id: 2,
     name: 'doctor',
-    photonId: '',
+    deviceId: '',
     photonName: 'red',
   },
   {
     id: 3,
     name: 'money',
-    photonId: '',
+    deviceId: '',
     photonName: 'green',
   },
   {
     id: 4,
     name: 'professor',
-    photonId: '',
+    deviceId: '',
     photonName: 'yellow',
   },
 ];

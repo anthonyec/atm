@@ -1,6 +1,5 @@
 const Bookshelf = require('../services/database');
-
-require('./request');
+const Request = require('./request');
 
 var Receipt = Bookshelf.Model.extend({
   tableName: 'receipts',

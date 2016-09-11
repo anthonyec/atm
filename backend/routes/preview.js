@@ -1,9 +1,7 @@
 const fs = require('fs');
 const express = require('express');
-const Particle = require('particle-api-js');
 
 const router  = express.Router();
-const particle = new Particle();
 
 const token = process.env.PARTICLE_TOKEN;
 

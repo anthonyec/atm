@@ -15,6 +15,7 @@ var Request = Bookshelf.Model.extend({
     return this.belongsTo('Robot', 'robotId');
   },
 
+  // Instance methods
   setStatusIncomplete() {
     this.set('status', consts.INCOMPLETE);
     return this.save();
@@ -29,6 +30,14 @@ var Request = Bookshelf.Model.extend({
     this.set('status', consts.COMPLETE);
     return this.save();
   },
+}, {
+  // Static methods
+  getLatestIncomplete() {
+    return this.forge()
+      .where({ status: consts.INCOMPLETE })
+      .query('orderBy', 'created_at', 'desc')
+      .fetch({ withRelated: ['robot'] });
+  }
 });
 
 module.exports = Bookshelf.model('Request', Request);

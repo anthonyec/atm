@@ -58,8 +58,9 @@ router.post('/', (req, res) => {
 
     // Else send a text back using the invalid template
     res.render('sms/invalid', { layout: false });
-  }).catch(() => {
-    console.log('[SMS] an error occurred');
+  }).catch((e) => {
+    console.log('[SMS] an error occurred', e);
+    res.setStatus(500);
   });
 
   console.log(`[SMS] message received from ${from}`);

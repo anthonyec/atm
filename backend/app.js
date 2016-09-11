@@ -47,7 +47,6 @@ const postcode = 'E84PP';
 const data = {
   jobId: 'job-id-1',
   phoneNumber: 'phone-number-1',
-  robotName: 'robot-1',
 };
 
 generatePrediction(postcode, tempData['giraffe'], data)

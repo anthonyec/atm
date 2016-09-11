@@ -20,6 +20,28 @@ function fetchApiData(postcode, endpointName) {
   });
 }
 
+function fetchApisData(postcode, endpointsString) {
+  return new Promise((resolve, reject) => {
+    console.log('fetchApisData');
+    const endpoints = endpointsString.split(',');
+    console.log('endpoints', endpoints);
+    //  fetch data from all endpoints;
+    const promises = endpoints.map((endpoint) => {
+      console.log(postcode, endpoint);
+      return fetchApiData(postcode, endpoint);
+    });
+
+    Promise.all(promises)
+      .then((resp) => {
+        resolve(resp);
+      })
+      .catch((err) => {
+        console.log('Err!', err);
+        reject(err)
+      });
+  });
+}
+
 function fetchFile(filePath) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', function(err, contents) {
@@ -36,10 +58,10 @@ function fetchFile(filePath) {
 function generatePrediction(postcode, options, headerFooterData) {
   return new Promise((resolve, reject) => {
 
-    const { endpoint, templatePath, controller } = options;
+    const { endpoints, templatePath, controller } = options;
 
     //  1) fetchdata from api
-    const apiDataPromise = fetchApiData(postcode, endpoint);
+    const apiDataPromise = fetchApisData(postcode, endpoints);
 
     // 2) fetch template for prediction body
     const predictionTmpUrl = options.templatePath;
@@ -56,11 +78,15 @@ function generatePrediction(postcode, options, headerFooterData) {
             const apiData = values[0];
             const predictionTmp = values[1];
 
+            console.log('apiData', apiData);
+
             //  compile template
             const template = hbs.compile(predictionTmp);
 
+            console.log('apiData', apiData);
+
             // do additional logic on data from API
-            const controllerData = controller(apiData);
+            const controllerData = controller.apply(this,apiData);
 
             //  combine data from API with data that are used for header and
             //  footer partials

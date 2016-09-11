@@ -5,6 +5,8 @@ const hbs = require('hbs');
 const API_URL = 'http://atm-data-api.herokuapp.com/api/1/datapoints';
 const PARTIALS_TEMPLATE_DIRECTORY = `${__dirname}/views/partials`;
 
+const getRandomGreeting = require('./greetings').getRandomGreeting;
+
 function fetchApiData(postcode, endpointName) {
   return new Promise((resolve, reject) => {
     //  construct url
@@ -22,12 +24,9 @@ function fetchApiData(postcode, endpointName) {
 
 function fetchApisData(postcode, endpointsString) {
   return new Promise((resolve, reject) => {
-    console.log('fetchApisData');
     const endpoints = endpointsString.split(',');
-    console.log('endpoints', endpoints);
     //  fetch data from all endpoints;
     const promises = endpoints.map((endpoint) => {
-      console.log(postcode, endpoint);
       return fetchApiData(postcode, endpoint);
     });
 
@@ -78,21 +77,18 @@ function generatePrediction(postcode, options, headerFooterData) {
             const apiData = values[0];
             const predictionTmp = values[1];
 
-            console.log('apiData', apiData);
-
             //  compile template
             const template = hbs.compile(predictionTmp);
-
-            console.log('apiData', apiData);
 
             // do additional logic on data from API
             const controllerData = controller.apply(this,apiData);
 
+            const greeting = getRandomGreeting();
+
             //  combine data from API with data that are used for header and
             //  footer partials
-            const tmpData = Object.assign({}, controllerData, headerFooterData);
-
-            console.log('tmpData', tmpData);
+            const tmpData = Object.assign({}, controllerData, headerFooterData,
+              { greeting });
 
             // pass all data to template to get final string
             const predictionString = template(tmpData);

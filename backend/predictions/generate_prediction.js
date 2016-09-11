@@ -22,12 +22,10 @@ function fetchApiData(postcode, endpointName) {
 
 function fetchFile(filePath) {
   return new Promise((resolve, reject) => {
-    console.log('filePath', filePath);
     fs.readFile(filePath, 'utf8', function(err, contents) {
       if (!err) {
         resolve(contents);
       } else {
-        console.log('fetchFile reject', err);
         reject(err);
       }
     });
@@ -46,8 +44,6 @@ function generatePrediction(postcode, options, headerFooterData) {
     // 2) fetch template for prediction body
     const predictionTmpUrl = options.templatePath;
     const predictionTmpFilePromise = fetchFile(predictionTmpUrl);
-
-    console.log('endpoint', endpoint);
 
     //  3) register partials for header and footer
     hbs.registerPartials(`${__dirname}/views/partials`);
@@ -69,6 +65,8 @@ function generatePrediction(postcode, options, headerFooterData) {
             //  combine data from API with data that are used for header and
             //  footer partials
             const tmpData = Object.assign({}, controllerData, headerFooterData);
+
+            console.log('tmpData', tmpData);
 
             // pass all data to template to get final string
             const predictionString = template(tmpData);

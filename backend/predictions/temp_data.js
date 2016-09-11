@@ -1,6 +1,7 @@
 const makeMoneyController = require('./controllers/make_money');
 const giraffeController = require('./controllers/giraffe');
 const stolenPhonesController = require('./controllers/stolen_phones');
+const crimesController = require('./controllers/crimes');
 const euPassportsController = require('./controllers/eu_passports');
 const heartDiseaseController = require('./controllers/heart_disease');
 const populationController = require('./controllers/population');
@@ -35,6 +36,11 @@ exports.predictions = {
     endpoint: 'population',
     templatePath: 'predictions/views/predictions/ebola.hbs',
     controller: populationController.controller
+  },
+  'crimes': {
+    endpoint: 'crimes',
+    templatePath: 'predictions/views/predictions/crimes.hbs',
+    controller: crimesController.controller
   },
   'heart-disease': {
     endpoint: 'heart-disease',

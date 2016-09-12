@@ -31,10 +31,6 @@ var Robot = Bookshelf.Model.extend({
       name: 'printData',
       argument: argument,
       auth: token,
-    }).then((res) => {
-      console.log(res);
-    }).catch((err) => {
-      throw new Error(err);
     });
   },
 });

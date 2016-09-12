@@ -38,7 +38,13 @@ requestManager.events.on('created', (requestModel) => {
       })
 
       const receiptModel = yield receipt.save();
-      robot.requestReceiptPrint(receiptModel.get('id'));
+
+      robot.requestReceiptPrint(receiptModel.get('id')).then(() => {
+        request.setStatusComplete();
+        request.save();
+      }).catch((err) => {
+        throw new Error(err);
+      });
 
       console.log('[APP] receipt generated', receiptModel.get('id'));
 

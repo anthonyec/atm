@@ -16,6 +16,7 @@ function handleReceiveData(buffer) {
 
     if (request.id) {
       request.setStatusPrinting();
+      request.save();
     }
 
     formatLines(output).forEach((line) => {

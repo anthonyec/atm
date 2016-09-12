@@ -23,8 +23,8 @@ const requests = [
     robotId: 2,
   },
   {
-    postcode: 'EC2',
-    phoneNumber: '+440000000005',
+    postcode: 'E9 6QQ',
+    phoneNumber: '+440000000004',
     robotId: 4,
   },
 ];

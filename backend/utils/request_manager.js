@@ -69,9 +69,9 @@ function RequestManager() {
         const robotId = robot.id;
         const request = new Request(Object.assign({}, options, { robotId }));
 
-        request.save().then(() => {
-          events.emit('created', request);
-          resolve(request);
+        request.save().then((model) => {
+          events.emit('created', model);
+          resolve(model);
         }).catch(reject);
       });
     });

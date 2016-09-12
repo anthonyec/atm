@@ -8,6 +8,10 @@ var Prediction = Bookshelf.Model.extend({
   robot() {
     return this.belongsTo('Robot', 'robotId');
   },
+
+  getRandom() {
+    console.log(this);
+  }
 });
 
 module.exports = Bookshelf.model('Prediction', Prediction);

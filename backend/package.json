@@ -19,7 +19,7 @@
     "wordwrapjs": "^1.2.1"
   },
   "devDependencies": {
-    "nodemon": "^1.10.2",
+    "nodemon": "^1.10.2"
   },
   "scripts": {
     "start": "node ./app.js",

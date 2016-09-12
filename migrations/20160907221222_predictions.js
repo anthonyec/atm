@@ -5,7 +5,6 @@ exports.up = function(knex, Promise) {
     table.string('endpoint');
     table.string('templatePath');
     table.string('controller');
-    table.boolean('special').defaultTo(false);
   });
 };
 

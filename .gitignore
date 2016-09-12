@@ -11,6 +11,6 @@ npm-debug.log
 ehthumbs.db
 Thumbs.dbnode_modules
 tmp
-
+newrelic_agent.log
 # excel lock files
 ~$*

@@ -5,7 +5,8 @@ const normalizedPath = path.join(__dirname, 'controllers');
 // Return a key value map with all the controllers
 const controllers = fs.readdirSync(normalizedPath).reduce((obj, file) => {
   const name = path.basename(file, '.js');
-  obj[name] = require('./controllers/' + file);
+  const controller = require('./controllers/' + file).controller;
+  obj[name] = controller;
   return obj;
 }, {});
 
@@ -13,6 +14,11 @@ const controllers = fs.readdirSync(normalizedPath).reduce((obj, file) => {
 // controller name
 const firstController = Object.keys(controllers)[0];
 
-module.exports = function getController(name = firstController) {
+module.exports = function getController(name) {
+  if (!controllers.hasOwnProperty(name)) {
+    console.warn('Could not get controller', name);
+    name = firstController;
+  }
+
   return controllers[name];
 }

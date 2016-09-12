@@ -12,8 +12,11 @@ function handleReceiveData(buffer) {
     const output = receipt.get('output');
     const request = receipt.related('request');
 
+    console.log('Receipt time');
+
     if (request.id) {
       request.setStatusPrinting();
+      request.save();
     }
 
     formatLines(output).forEach((line) => {

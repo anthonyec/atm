@@ -20,11 +20,16 @@ var Robot = Bookshelf.Model.extend({
   // Instance methods
   requestReceiptPrint(receiptId) {
     const deviceId = this.get('deviceId');
+    const url = process.env.TCP_URL || '';
+    const port = process.env.TCP_PORT || '';
+    const argument = `${url};${port};${receiptId}`;
+
+    console.log('[APP]', argument);
 
     return particle.callFunction({
-      deviceId,
+      deviceId: deviceId,
       name: 'printData',
-      argument: `pbots.net;2000;${receiptId}`,
+      argument: argument,
       auth: token,
     });
   },

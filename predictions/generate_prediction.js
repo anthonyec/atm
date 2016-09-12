@@ -4,6 +4,7 @@ const hbs = require('hbs');
 
 const getRandomGreeting = require('./greetings').getRandomGreeting;
 const getRobotSignatures = require('./robot_signatures').getRobotSignatures;
+const getRogueScript = require('./rogue_scripts').getRogueScript;
 
 const API_URL = 'http://atm-data-api.herokuapp.com/api/1/datapoints';
 const PARTIALS_TEMPLATE_DIRECTORY = `${__dirname}/views/partials`;
@@ -87,11 +88,12 @@ function generatePrediction(postcode, options, headerFooterData) {
             //  fetch additinonal data
             const greeting = getRandomGreeting();
             const robotSignature = getRobotSignatures(robotId);
+            const rogueScript = getRogueScript();
 
             //  combine data from API with data that are used for header and
             //  footer partials
             const tmpData = Object.assign({}, controllerData, headerFooterData,
-              { greeting, robotSignature });
+              { greeting, robotSignature, rogueScript });
 
             // pass all data to template to get final string
             const predictionString = template(tmpData);

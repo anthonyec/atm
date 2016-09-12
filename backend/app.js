@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 
 const requestEvents = require('./request_events');
 const tcp = require('./services/tcp');
-const config = require('./config/config.json');
 const routes = require('./routes/index');
 const sms = require('./routes/sms');
 const preview = require('./routes/preview');

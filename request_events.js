@@ -40,7 +40,7 @@ requestManager.events.on('created', (requestModel) => {
       const receiptModel = yield receipt.save();
       robot.requestReceiptPrint(receiptModel.get('id'));
 
-      console.log('[APP] receipt generated');
+      console.log('[APP] receipt generated', receiptModel.get('id'));
 
       // do something here if requestReceiptPrint returns a error
       // maybe chose another robot to print from?

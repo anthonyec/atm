@@ -1,29 +1,35 @@
 const robots = [
   {
     id: 1,
-    name: 'cop',
+    name: 'astrologer',
     deviceId: '3e0035000347343339373536',
     photonName: 'blue',
   },
   {
     id: 2,
-    name: 'doctor',
+    name: 'crime',
     deviceId: '',
     photonName: 'red',
   },
   {
     id: 3,
-    name: 'money',
+    name: 'banker',
     deviceId: '',
     photonName: 'green',
   },
   {
     id: 4,
-    name: 'professor',
+    name: 'doctor',
     deviceId: '',
     photonName: 'yellow',
   },
 ];
+
+exports.getRobotByName = function(name) {
+  return robots.find((robot) => {
+    return robot.name === name;
+  });
+}
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries

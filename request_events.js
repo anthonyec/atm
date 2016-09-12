@@ -1,15 +1,18 @@
 const co = require('co');
+const { sample } = require('lodash');
 
 const requestManager = require('./utils/request_manager');
-const Receipt = require('./models/receipt');
-
 const generatePrediction = require('./predictions/generate_prediction.js');
-const tempData = require('./predictions/temp_data.js').predictions;
+const getController = require('./predictions/get_controller.js');
+const Receipt = require('./models/receipt');
+const Prediction = require('./models/prediction');
 const Request = require('./models/request');
 
-requestManager.events.on('created', (request) => {
+requestManager.events.on('created', (requestModel) => {
   co(function* () {
     try {
+      // The related robot data needs to be fetched from the database
+      const request = yield requestModel.load(['robot']);
       const robot = request.related('robot');
       const postcode = request.get('postcode');
       const data = {
@@ -17,9 +20,18 @@ requestManager.events.on('created', (request) => {
         robotName: robot.get('name')
       };
 
-      const prediction = yield generatePrediction(postcode, tempData['giraffe'], data);
+      const predictions = yield Prediction.forge()
+        .where({ robotId: robot.get('id') })
+        .fetchAll();
+
+      const prediction = sample(predictions.toJSON());
+      const controllerName = prediction.controller;
+
+      prediction.controller = getController(controllerName);
+
+      const output = yield generatePrediction(postcode, prediction, data);
       const receipt = Receipt.forge({
-        output: prediction,
+        output,
       })
 
       const receiptModel = yield receipt.save();

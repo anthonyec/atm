@@ -11,10 +11,12 @@ const Request = require('./models/request');
 requestManager.events.on('created', (requestModel) => {
   co(function* () {
     try {
-      // The related robot data needs to be fetched from the database
+      // Load fetches data forrelations in other tables
       const request = yield requestModel.load(['robot']);
       const robot = request.related('robot');
       const postcode = request.get('postcode');
+
+      // Extra data past to the generatePrediction function
       const data = {
         jobId: request.get('id'),
         robotName: robot.get('name')
@@ -27,6 +29,7 @@ requestManager.events.on('created', (requestModel) => {
       const prediction = sample(predictions.toJSON());
       const controllerName = prediction.controller;
 
+      // Replace the controller string with the actual funtion
       prediction.controller = getController(controllerName);
 
       const output = yield generatePrediction(postcode, prediction, data);
@@ -36,6 +39,8 @@ requestManager.events.on('created', (requestModel) => {
 
       const receiptModel = yield receipt.save();
       robot.requestReceiptPrint(receiptModel.get('id'));
+
+      console.log('[APP] receipt generated');
 
       // do something here if requestReceiptPrint returns a error
       // maybe chose another robot to print from?

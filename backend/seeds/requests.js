@@ -6,7 +6,6 @@ const requests = [
     status: consts.COMPLETE,
     phoneNumber: '+440000000000',
     robotId: 2,
-    prediction: 'wow\n\n\n',
   },
   {
     postcode: 'se20 8pj',

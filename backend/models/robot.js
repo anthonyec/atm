@@ -1,21 +1,32 @@
 const Bookshelf = require('../services/database');
+const Request = require('./request');
+const Particle = require('particle-api-js');
 
-require('./request');
+const particle = new Particle();
+const token = process.env.PARTICLE_TOKEN;
 
 var Robot = Bookshelf.Model.extend({
   tableName: 'robots',
-  hasTimestamps: true,
+  hasTimestamps: false,
 
   requests() {
     return this.hasMany('Request', 'robotId');
   },
 
-  templates() {
-    return this.hasMany('Template', 'robotId');
+  predictions() {
+    return this.hasMany('Prediction', 'predictionId');
   },
-}, {
-  getRequests() {
-    console.log('Get requests');
+
+  // Instance methods
+  requestReceiptPrint(receiptId) {
+    const deviceId = this.get('deviceId');
+
+    return particle.callFunction({
+      deviceId,
+      name: 'printData',
+      argument: `pbots.net;2000;${receiptId}`,
+      auth: token,
+    });
   },
 });
 

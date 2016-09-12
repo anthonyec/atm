@@ -1,12 +1,17 @@
+const EventEmitter = require('events').EventEmitter;
+const util = require('util');
 const _ = require('lodash');
 
 const Request = require('../models/request');
 const Robot = require('../models/robot');
 
+const events = new EventEmitter();
+
 function RequestManager() {
   // Public methods
   return({
     createNewRequest,
+    events,
   });
 
   function fetchLatestRequest(query = {}) {
@@ -34,10 +39,12 @@ function RequestManager() {
         fetchLatestRequest(rejectQuery),
       ]).then((values) => {
         const robots = values[0].toJSON();
+        const hasLastRobot = values[1] !== null;
+        const hasLastQueryRobot = values[2] !== null;
 
         // Get robotIds from both types of latest requests
-        const lastRobotId = values[1].get('robotId');
-        const lastQueryRobotId = values[2].get('robotId');
+        const lastRobotId = hasLastRobot ? values[1].get('robotId') : null;
+        const lastQueryRobotId = hasLastQueryRobot ? values[2].get('robotId') : null;
 
         // Return an array of robots that don't use the ids from the latest
         // request or the latest request by specific query
@@ -53,14 +60,20 @@ function RequestManager() {
   }
 
   function createNewRequest(options) {
-    const rejectQuery = {
-      phoneNumber: options.phoneNumber,
-    };
+    return new Promise((resolve, reject) => {
+      const rejectQuery = {
+        phoneNumber: options.phoneNumber,
+      };
 
-    return getRandomRobot(rejectQuery).then((robot) => {
-      const robotId = robot.id;
-      const request = new Request(Object.assign({}, options, { robotId }));
-      return request.save();
+      return getRandomRobot(rejectQuery).then((robot) => {
+        const robotId = robot.id;
+        const request = new Request(Object.assign({}, options, { robotId }));
+
+        request.save().then(() => {
+          events.emit('created', request);
+          resolve(request);
+        }).catch(reject);
+      });
     });
   }
 }

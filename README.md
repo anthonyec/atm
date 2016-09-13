@@ -9,13 +9,20 @@ export TWILIO_SID=''
 export TWILIO_TOKEN=''
 export TWILIO_PHONE_NUMBER=''
 export NODE_ENV='' # development | production
+
+export DB_HOSTNAME=''
+export DB_NAME=''
+export DB_PASSWORD=''
+export DB_USERNAME=''
+export TCP_URL=''
+export TCP_PORT=''
 ```
 
 ### SSH
 Production is hosted on DigitalOcean
 
 ```
-$ ssh root@178.62.113.246
+$ ssh root@139.59.173.196
 ```
 
 ## Misc info

@@ -18,7 +18,6 @@ router.get('/:name', (req, res) => {
   const predictionRow = predictions[name];
   const data = {
     jobId: 'job-id-1',
-    phoneNumber: 'phone-number-1',
   };
 
   const predictionText = generatePrediction(postcode, predictionRow, data)

@@ -17,6 +17,13 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  //  check if there's any Body at all
+  if (!req.body.Body) {
+    //  empty message has been sent, send invalid sms template
+    res.render('sms/invalid', { layout: false });
+    return;
+  }
+
   const body = req.body.Body.replace(/[^\w\s]/gi, '');
   const from = req.body.From;
   const to = req.body.To;

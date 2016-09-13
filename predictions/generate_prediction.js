@@ -8,6 +8,8 @@ const getRobotSignatures = require('./robot_signatures').getRobotSignatures;
 const getRogueScript = require('./rogue_scripts').getRogueScript;
 const getRandomFuture = require('./futures').getRandomFuture;
 
+const registerHelpers = require('./hbs_helpers.js');
+
 const API_URL = 'http://atm-data-api.herokuapp.com/api/1/datapoints';
 const PARTIALS_TEMPLATE_DIRECTORY = `${__dirname}/views/partials`;
 
@@ -108,7 +110,6 @@ function generatePrediction(postcode, options, headerFooterData) {
     const predictionTmpFilePromise = fetchFile(predictionTmpUrl);
 
     let predictionString = '';
-
 
     predictionTmpFilePromise
       .then((predictionTmp) => {

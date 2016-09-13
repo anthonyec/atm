@@ -44,19 +44,4 @@ streamer.listen(2000, () => {
 hbs.registerPartials(`${__dirname}/predictions/views/partials`);
 registerHelpers(hbs);
 
-/* temp */
-setTimeout(() => {
-  const generatePrediction = require('./predictions/generate_prediction.js');
-  const postcode = 'e84pp';
-  const options = require('./predictions/temp_data').predictions['people-alone'];
-  const headerFooterData = {};
-
-  generatePrediction(postcode, options, headerFooterData)
-    .then((resp) => {
-      console.log('resp', resp);
-    })
-    .catch((err) => console.log(err))
-  }, 250);
-
-
 module.exports = app;

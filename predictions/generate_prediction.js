@@ -39,7 +39,8 @@ function fetchApisData(postcode, endpointsString) {
         resolve(resp);
       })
       .catch((err) => {
-        console.log('Err!', err);
+        //  console.log('Err!', err);
+        console.log('calling reject');
         reject(err)
       });
   });
@@ -57,61 +58,85 @@ function fetchFile(filePath) {
   });
 }
 
+function renderDefaultTemplate(options, headerFooterData) {
+  return fetchFile(`${__dirname}/views/predictions/fishing_industry.hbs`)
+              .then((tmp) => {
+                return renderPrediction({}, tmp, options, headerFooterData);
+              })
+              .catch((err) => {
+                //  not even default template load, give up
+                console.error('Could not load any of the templates');
+              });
+}
+
+function renderPrediction(apiData, predictionTmp, options, headerFooterData) {
+  try {
+    const { robotId, controller } = options;
+
+    const template = hbs.compile(predictionTmp);
+
+    // do additional logic on data from API
+    const controllerData = controller.apply(this, apiData);
+
+    //  fetch additinonal data
+    const greeting = getRandomGreeting();
+    const robotSignature = getRobotSignatures(robotId);
+    const rogueScript = getRogueScript();
+
+    //  combine data from API with data that are used for header and
+    //  footer partials
+    const tmpData = Object.assign({}, controllerData, headerFooterData,
+      { greeting, robotSignature, rogueScript });
+
+    // pass all data to template to get final string
+    const predictionString = template(tmpData);
+
+    return predictionString;
+  } catch(err) {
+    console.log('Error compiling template', err);
+  }
+
+}
 
 function generatePrediction(postcode, options, headerFooterData) {
   return new Promise((resolve, reject) => {
 
-    const { robotId, endpoints, templatePath, controller } = options;
+    let { templatePath, endpoints } = options;
 
-    //  1) fetchdata from api
-    const apiDataPromise = fetchApisData(postcode, endpoints);
-
-    // 2) fetch template for prediction body
-    const predictionTmpUrl = options.templatePath;
+    //  1) fetch prediction template
+    const predictionTmpUrl = templatePath;
     const predictionTmpFilePromise = fetchFile(predictionTmpUrl);
 
-    //  3) register partials for header and footer
-    hbs.registerPartials(`${__dirname}/views/partials`);
+    let predictionString = '';
 
-    //  4) wait for everything to load
-    Promise.all([apiDataPromise, predictionTmpFilePromise])
-        .then((values) => {
 
-          try {
-            const apiData = values[0];
-            const predictionTmp = values[1];
+    predictionTmpFilePromise
+      .then((predictionTmp) => {
+        //  2a) load data from api
+        fetchApisData(postcode, endpoints)
+          .then((apiData) => {
 
-            //  compile template
-            const template = hbs.compile(predictionTmp);
-
-            // do additional logic on data from API
-            const controllerData = controller.apply(this,apiData);
-
-            //  fetch additinonal data
-            const title = getRandomTitle();
-            const greeting = getRandomGreeting();
-            const robotSignature = getRobotSignatures(robotId);
-            const rogueScript = getRogueScript();
-            const whatFuture = getRandomFuture();
-
-            //  combine data from API with data that are used for header and
-            //  footer partials
-            const tmpData = Object.assign({}, controllerData, headerFooterData,
-              { title, greeting, robotSignature, rogueScript, whatFuture });
-
-            // pass all data to template to get final string
-            const predictionString = template(tmpData);
-
-            //  all done
+            //  3a) got api data, ready to render template
+            predictionString = renderPrediction(apiData, predictionTmp, options, headerFooterData);
             resolve(predictionString);
-          } catch(err) {
+          })
+          .catch((err) => {
+            //  3b) api call failed, but template controller should have some default
+            //  data
+            predictionString = renderPrediction([], predictionTmp, options, headerFooterData);
+            resolve(predictionString);
+          });
+      })
+      .catch((err) => {
+        //  2b) error loading template, render emergency default template
+        renderDefaultTemplate(options, headerFooterData)
+          .then((predictionString) => {
+            resolve(predictionString);
+          })
+          .catch((err) => {
             reject(err);
-          }
-        })
-        .catch((err) => {
-          reject(err);
-        });
-
+          });
+      });
   });
 }
 

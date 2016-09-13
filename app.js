@@ -9,6 +9,7 @@ const routes = require('./routes/index');
 const sms = require('./routes/sms');
 const preview = require('./routes/preview');
 const predictions = require('./predictions');
+const hbs = require('hbs');
 
 const app = express();
 const streamer = tcp();
@@ -36,5 +37,24 @@ app.listen(process.env.PORT || 4000, function () {
 streamer.listen(2000, () => {
   console.log('[TCP] server started: port 2000');
 });
+
+//  register partials for header and footer of the predictions
+hbs.registerPartials(`${__dirname}/predictions/views/partials`);
+
+
+/* temp */
+setTimeout(() => {
+  const generatePrediction = require('./predictions/generate_prediction.js');
+  const postcode = 'e84pp';
+  const options = require('./predictions/temp_data').predictions['people-alone'];
+  const headerFooterData = {};
+
+  generatePrediction(postcode, options, headerFooterData)
+    .then((resp) => {
+      console.log('resp', resp);
+    })
+    .catch((err) => console.log(err))
+  }, 250);
+
 
 module.exports = app;

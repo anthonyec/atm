@@ -1,5 +1,5 @@
 const FUTURES = [
-  "PLEASENT",
+  "PLEASANT",
   "FULFILLING",
 ];
 

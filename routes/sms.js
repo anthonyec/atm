@@ -1,8 +1,11 @@
 const express = require('express');
 const twilio = require('twilio');
+const moment = require('moment');
 
 const requestManager = require('../utils/request_manager');
 const postcode = require('../utils/postcode');
+const isBetweenOpeningHours =
+  require('../utils/opening_hours').isBetweenOpeningHours;
 
 const router  = express.Router();
 const client = twilio(
@@ -20,8 +23,7 @@ router.post('/', (req, res) => {
   //  check if there's any Body at all
   if (!req.body.Body) {
     //  empty message has been sent, send invalid sms template
-    res.render('sms/invalid', { layout: false });
-    return;
+    return res.render('sms/invalid', { layout: false });
   }
 
   const body = req.body.Body.replace(/[^\w\s]/gi, '');
@@ -34,6 +36,15 @@ router.post('/', (req, res) => {
 
   if (!from) {
     return res.sendStatus(400);
+  }
+
+  //  check if sms sent withing agreed time interval
+  const nowTime = moment();
+  const isOpen = isBetweenOpeningHours(nowTime);
+  if (!isOpen) {
+    //  sms sent either late or early in the day, or on day when gallery no
+    //  longer open sen
+    return res.render('sms/closed', { layout: false });
   }
 
   const code = postcode(body);

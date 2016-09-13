@@ -1,7 +1,7 @@
 const GREETINGS = [
-  "Yo!",
-  "Hello there,",
-  "Howdy partner.",
+  "Bonjour.",
+  "Hello there.",
+  "Greetings.",
 ];
 
 exports.getRandomGreeting = function() {

@@ -8,6 +8,8 @@ const getRobotSignatures = require('./robot_signatures').getRobotSignatures;
 const getRogueScript = require('./rogue_scripts').getRogueScript;
 const getRandomFuture = require('./futures').getRandomFuture;
 
+const registerHelpers = require('./hbs_helpers.js');
+
 const API_URL = 'http://atm-data-api.herokuapp.com/api/1/datapoints';
 const PARTIALS_TEMPLATE_DIRECTORY = `${__dirname}/views/partials`;
 
@@ -72,6 +74,7 @@ function generatePrediction(postcode, options, headerFooterData) {
 
     //  3) register partials for header and footer
     hbs.registerPartials(`${__dirname}/views/partials`);
+    registerHelpers(hbs);
 
     //  4) wait for everything to load
     Promise.all([apiDataPromise, predictionTmpFilePromise])

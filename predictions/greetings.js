@@ -1,7 +1,13 @@
 const GREETINGS = [
-  "Bonjour.",
-  "Hello there.",
-  "Greetings.",
+  "Hello human.",
+  "Hello mortal.",
+  "Hello lifeform.",
+  "Hello meatbag.",
+  "Hello primate.",
+  "Hello truth-seeker.",
+  "Hello person.",
+  "Hello primitive species.",
+  "Hello master.",
 ];
 
 exports.getRandomGreeting = function() {

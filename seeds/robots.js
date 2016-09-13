@@ -8,19 +8,19 @@ const robots = [
   {
     id: 2,
     name: 'crime',
-    deviceId: '',
+    deviceId: '3e0035000347343339373536',
     photonName: 'red',
   },
   {
     id: 3,
     name: 'banker',
-    deviceId: '',
+    deviceId: '3e0035000347343339373536',
     photonName: 'green',
   },
   {
     id: 4,
     name: 'doctor',
-    deviceId: '',
+    deviceId: '3e0035000347343339373536',
     photonName: 'yellow',
   },
 ];

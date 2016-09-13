@@ -1,6 +1,6 @@
 const ROBOT_SIGNATURES = {
   'astrologer': 'SKY_351',
-  'health': 'DOC_616',
+  'doctor': 'DOC_616',
   'banker': 'GDP_548',
   'crime': 'DCI_404',
 };

@@ -5,7 +5,7 @@ const hbs = require('hbs');
 const getRandomTitle = require('./titles').getRandomTitle;
 const getRandomGreeting = require('./greetings').getRandomGreeting;
 const getRobotSignatures = require('./robot_signatures').getRobotSignatures;
-const getRogueScript = require('./rogue_scripts').getRogueScript;
+const getRobotSmile = require('./robot_smiles').getRobotSmile;
 const getRandomFuture = require('./futures').getRandomFuture;
 
 const registerHelpers = require('./hbs_helpers.js');
@@ -84,11 +84,12 @@ function renderPrediction(apiData, predictionTmp, options, headerFooterData) {
     //  fetch additinonal data
     const greeting = getRandomGreeting();
     const robotSignature = getRobotSignatures(robotId);
+    const robotSmile = getRobotSmile(robotId);
 
     //  combine data from API with data that are used for header and
     //  footer partials
     const tmpData = Object.assign({}, controllerData, headerFooterData,
-      { greeting, robotSignature });
+      { greeting, robotSignature, robotSmile });
 
     // pass all data to template to get final string
     const predictionString = template(tmpData);

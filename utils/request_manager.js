@@ -24,7 +24,10 @@ function RequestManager() {
 
   function fetchRobots() {
     //  make sure to fetch only available robots
-    return Robot.forge().where('isAvailable', 1).fetchAll();
+    return Robot.forge()
+      .where('isAvailable', 1)
+      .where('isConnected', 1)
+      .fetchAll();
   }
 
   function getRandomRobot(rejectQuery) {

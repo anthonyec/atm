@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const requestEvents = require('./request_events');
 const tcp = require('./services/tcp');
+const robots = require('./services/robots');
 const routes = require('./routes/index');
 const hbs = require('hbs');
 
@@ -36,6 +37,7 @@ app.use('/predictions', predictions);
 
 app.listen(process.env.PORT || 4000, function () {
   console.log('[APP] server started: port 4000');
+  robots.monitor();
 });
 
 streamer.listen(2000, () => {

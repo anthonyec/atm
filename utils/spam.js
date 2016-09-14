@@ -14,6 +14,8 @@ function getCountForLastMinute(phoneNumber) {
 
     //  minute ago time
     const minuteAgo = moment().subtract(1, 'minutes').format(TIME_FORMAT);
+    console.log('moment()');
+    console.log(moment().format(TIME_FORMAT));
 
     Request.getAllForPhoneNumberAfterTime(phoneNumber, minuteAgo)
       .then((count) => {
@@ -68,8 +70,6 @@ function isSpam(phoneNumber) {
         //  do we have more request then allowed?
         const isSpam = (lastMinuteCount > MAX_PER_MINUTE) ||
           (lastHourCount > MAX_PER_HOUR);
-
-        console.log('isSpam', isSpam);
 
         return resolve(isSpam);
       })

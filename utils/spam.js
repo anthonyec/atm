@@ -1,4 +1,4 @@
-const moment = require('moment');
+const moment = require('moment-timezone');
 const Request = require('../models/request');
 
 //  do we want to check how many request are we getting from one number
@@ -50,6 +50,9 @@ function getCountForLastHour(phoneNumber) {
 }
 
 function isSpam(phoneNumber) {
+  //  make sure we're using the same timezone as mysql
+  moment.tz.setDefault('Europe/London');
+
   return new Promise((resolve, reject) => {
 
     //  if spam filter not enabled, just return true

@@ -13,7 +13,7 @@ Handlebars.registerHelper('pre', function(options) {
 
 Handlebars.registerHelper('center', function(options) {
   // byte 14 - 15
-  return '\x0e\n' + options.fn(this) + '\n\x0f';
+  return '\x0e' + options.fn(this) + '\x0f';
 });
 
 Handlebars.registerHelper('b', function(options) {

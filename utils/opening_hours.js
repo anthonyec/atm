@@ -5,7 +5,7 @@
 const moment = require('moment');
 
 const START_DATE = moment('2016-09-13');
-const PUBLIC_START_DATE = moment('2016-09-16');
+const PUBLIC_START_DATE = moment('2016-09-15');
 const END_DATE = moment('2016-09-20');
 const START_HOUR = 10;
 const END_HOUR = 18;

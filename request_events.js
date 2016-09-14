@@ -16,11 +16,14 @@ requestManager.events.on('created', (requestModel) => {
       const robot = request.related('robot');
       const postcode = request.get('postcode');
 
+
       // Extra data past to the generatePrediction function
       const data = {
         jobId: request.get('id'),
         robotName: robot.get('name')
       };
+
+      console.log(robot.toJSON());
 
       const predictions = yield Prediction.forge()
         .where({ robotId: robot.get('id') })

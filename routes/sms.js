@@ -6,6 +6,7 @@ const requestManager = require('../utils/request_manager');
 const postcode = require('../utils/postcode');
 const isBetweenOpeningHours =
   require('../utils/opening_hours').isBetweenOpeningHours;
+const isSpam = require('../utils/spam');
 
 const router  = express.Router();
 const client = twilio(
@@ -42,27 +43,39 @@ router.post('/', (req, res) => {
   const nowTime = moment();
   const isOpen = isBetweenOpeningHours(nowTime);
   if (!isOpen) {
-    //  sms sent either late or early in the day, or on day when gallery no
-    //  longer open sen
+    //  sms sent either late or early in the day, or on day when gallery is no
+    //  longer open
     return res.render('sms/closed', { layout: false });
   }
 
   const code = postcode(body);
 
   Promise.all([
+    // Check if we don't have too many requests
+    isSpam(from),
+
     // Check if the postcode is a full valid postcode, Eg: EC2A 3AR
     code.isValid(),
 
     // Check if the postcode can be autocompleted, Eg: EC2 could be EC2A 3AR
     // If it can it will return a list of possible postcodes
-    code.autocomplete(),
+    code.autocomplete()
+
   ]).then((values) => {
-    const isFullPostcode = values[0];
+    //  check if the spam filter worked out that there are too many request from
+    //  given number
+    const spam = values[0];
+    if (spam) {
+      //  too many request, send
+      return res.render('sms/spam', { layout: false });
+    }
+
+    const isFullPostcode = values[1];
 
     // Check if autocompleted returned a list of possible postcodes.
     // Also check if postcode is bigger than 3, otherwise a SMS like "S" would
     // return all postcodes starting with "S" and would be valid
-    const isPartialPostcode = values[1] && body.length > 3;
+    const isPartialPostcode = values[2] && body.length > 3;
 
     if (isFullPostcode || isPartialPostcode) {
       // Add a new request to the database

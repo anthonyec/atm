@@ -12,6 +12,8 @@ const sms = require('./routes/sms');
 const preview = require('./routes/preview');
 const predictions = require('./predictions');
 const registerHelpers = require('./predictions/hbs_helpers.js');
+const registerSmsHelpers = require('./predictions/sms_hbs_helpers.js');
+const isSmsOnlyMode = require('./utils/sms_only_mode.js');
 
 const app = express();
 const streamer = tcp();
@@ -42,6 +44,14 @@ streamer.listen(2000, () => {
 
 //  register partials for header and footer of the predictions
 hbs.registerPartials(`${__dirname}/predictions/views/partials`);
-registerHelpers(hbs);
+
+//  if we were using sms-only mode, we need to register empty helpers
+if (!isSmsOnlyMode()) {
+  //  normal helpers for printer
+  registerHelpers(hbs);
+} else {
+  //  empty helpers for phone
+  registerSmsHelpers(hbs);
+}
 
 module.exports = app;

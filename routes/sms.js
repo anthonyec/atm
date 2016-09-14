@@ -1,6 +1,6 @@
 const express = require('express');
 const twilio = require('twilio');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 const requestManager = require('../utils/request_manager');
 const postcode = require('../utils/postcode');
@@ -39,8 +39,9 @@ router.post('/', (req, res) => {
     return res.sendStatus(400);
   }
 
-  //  check if sms sent withing agreed time interval
-  const nowTime = moment();
+  //  check if sms sent withing agreed time interval (make sure we're using
+  //  London timezone, cause production has set different timeozne)
+  const nowTime = moment().tz('Europe/London');
   const isOpen = isBetweenOpeningHours(nowTime);
   if (!isOpen) {
     //  sms sent either late or early in the day, or on day when gallery is no

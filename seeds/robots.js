@@ -14,7 +14,7 @@ const robots = [
   {
     id: 3,
     name: 'banker',
-    deviceId: '44002a001147343339383037',
+    deviceId: '3e0035000347343339373536', // 44002a001147343339383037
     photonName: 'green',
   },
   {

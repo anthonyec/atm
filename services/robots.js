@@ -28,7 +28,7 @@ function robots() {
 
       timeout = setTimeout(() => {
         monitor();
-      }, 10000);
+      }, 30000);
     }, (err) => {
       console.log(err);
     });

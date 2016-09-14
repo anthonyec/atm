@@ -6,9 +6,12 @@ const bodyParser = require('body-parser');
 const requestEvents = require('./request_events');
 const tcp = require('./services/tcp');
 const routes = require('./routes/index');
+const hbs = require('hbs');
+
 const sms = require('./routes/sms');
 const preview = require('./routes/preview');
 const predictions = require('./predictions');
+const registerHelpers = require('./predictions/hbs_helpers.js');
 
 const app = express();
 const streamer = tcp();
@@ -36,5 +39,9 @@ app.listen(process.env.PORT || 4000, function () {
 streamer.listen(2000, () => {
   console.log('[TCP] server started: port 2000');
 });
+
+//  register partials for header and footer of the predictions
+hbs.registerPartials(`${__dirname}/predictions/views/partials`);
+registerHelpers(hbs);
 
 module.exports = app;

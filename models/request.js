@@ -37,7 +37,16 @@ var Request = Bookshelf.Model.extend({
       .where({ status: consts.INCOMPLETE })
       .query('orderBy', 'created_at', 'desc')
       .fetch({ withRelated: ['robot'] });
+  },
+
+  getAllForPhoneNumberAfterTime(phoneNumber, date) {
+    return this.forge()
+      .where({ phoneNumber: phoneNumber })
+      .where('created_at', '>', date)
+      .count();
   }
+
+
 });
 
 module.exports = Bookshelf.model('Request', Request);

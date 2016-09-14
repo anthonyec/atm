@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
   return knex.schema.table('requests', function (table) {
-    table.integer('attempts').defaultTo(0);
+    table.integer('attempts').after('status').defaultTo(0);
   });
 };
 

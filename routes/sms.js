@@ -1,5 +1,4 @@
 const express = require('express');
-const twilio = require('twilio');
 const moment = require('moment-timezone');
 
 const requestManager = require('../utils/request_manager');
@@ -9,10 +8,6 @@ const isBetweenOpeningHours =
 const isSpam = require('../utils/spam');
 
 const router  = express.Router();
-const client = twilio(
-  process.env.TWILIO_SID || '123', // add some fake number if env not set
-  process.env.TWILIO_TOKEN || '123' // add some fake number if env not set
-);
 
 router.get('/', (req, res) => {
   res.render('pages/sms', {
@@ -66,6 +61,7 @@ router.post('/', (req, res) => {
     //  check if the spam filter worked out that there are too many request from
     //  given number
     const spam = values[0];
+
     if (spam) {
       //  too many request, send spam notification
       return res.render('sms/spam', { layout: false });

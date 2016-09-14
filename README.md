@@ -1,4 +1,5 @@
-# atm
+# Robotic Oracle
+
 ## Production
 ### Enviroment Variables
 Fill out and add these to `~/.bshrc`. Run `. ~/.bashrc` to reload the vars for the current shell.
@@ -50,6 +51,13 @@ $ forever start app.js
 Optionally to stop the app
 ```
 $ forever stop app.js
+```
+
+## Testing
+
+Manually testing posting the message
+```
+$ curl -X POST http://localhost:4000/sms -d "Body=n79bu&From=122"
 ```
 
 

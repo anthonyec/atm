@@ -73,7 +73,8 @@ function renderDefaultTemplate(options, headerFooterData) {
 
 function renderPrediction(apiData, predictionTmp, options, headerFooterData) {
   try {
-    const { robotId, controller } = options;
+    const { controller } = options;
+    const { robotId } = headerFooterData;
 
     const template = hbs.compile(predictionTmp);
 
@@ -116,7 +117,6 @@ function generatePrediction(postcode, options, headerFooterData) {
         //  2a) load data from data api
         fetchApisData(postcode, endpoints)
           .then((apiData) => {
-
             //  3a) got api data, ready to render template
             predictionString = renderPrediction(apiData, predictionTmp, options, headerFooterData);
             resolve(predictionString);

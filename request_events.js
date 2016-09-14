@@ -20,7 +20,7 @@ requestManager.events.on('created', (requestModel) => {
       // Extra data past to the generatePrediction function
       const data = {
         jobId: request.get('id'),
-        robotSignature: robot.get('name')
+        robotId: robot.get('name')
       };
 
       console.log(robot.toJSON());

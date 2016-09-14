@@ -84,12 +84,11 @@ function renderPrediction(apiData, predictionTmp, options, headerFooterData) {
     //  fetch additinonal data
     const greeting = getRandomGreeting();
     const robotSignature = getRobotSignatures(robotId);
-    const rogueScript = getRogueScript();
 
     //  combine data from API with data that are used for header and
     //  footer partials
     const tmpData = Object.assign({}, controllerData, headerFooterData,
-      { greeting, robotSignature, rogueScript });
+      { greeting, robotSignature });
 
     // pass all data to template to get final string
     const predictionString = template(tmpData);

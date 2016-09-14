@@ -1,4 +1,4 @@
-const moment = require('moment-timezone');
+const moment = require('moment');
 const Request = require('../models/request');
 
 //  do we want to check how many request are we getting from one number
@@ -13,9 +13,7 @@ function getCountForLastMinute(phoneNumber) {
   return new Promise((resolve, reject) => {
 
     //  minute ago time
-    const minuteAgo = moment().subtract(1, 'minutes').format(TIME_FORMAT);
-    console.log('moment()');
-    console.log(moment().format(TIME_FORMAT));
+    const minuteAgo = moment().subtract(1, 'minutes').toDate();
 
     Request.getAllForPhoneNumberAfterTime(phoneNumber, minuteAgo)
       .then((count) => {
@@ -34,7 +32,7 @@ function getCountForLastHour(phoneNumber) {
   return new Promise((resolve, reject) => {
 
     //  hour ago time
-    const hourAgo = moment().subtract(1, 'hours').format(TIME_FORMAT);
+    const hourAgo = moment().subtract(1, 'hours').toDate();
 
     Request.getAllForPhoneNumberAfterTime(phoneNumber, hourAgo)
       .then((count) => {
@@ -51,7 +49,7 @@ function getCountForLastHour(phoneNumber) {
 
 function isSpam(phoneNumber) {
   //  make sure we're using the same timezone as mysql
-  moment.tz.setDefault('Europe/London');
+  //  moment.tz.setDefault('Europe/London');
 
   return new Promise((resolve, reject) => {
 

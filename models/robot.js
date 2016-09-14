@@ -25,6 +25,7 @@ var Robot = Bookshelf.Model.extend({
     const argument = `${url};${port};${receiptId}`;
 
     console.log('[APP]', argument);
+    console.log('calling particle.callFunction deviceId', deviceId);
 
     return particle.callFunction({
       deviceId: deviceId,

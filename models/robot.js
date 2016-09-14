@@ -30,7 +30,7 @@ var Robot = Bookshelf.Model.extend({
 
       return particle.callFunction({
         deviceId: deviceId,
-        name: 'printDatas',
+        name: 'printData',
         argument: argument,
         auth: token,
       }).then(resolve, reject).catch((err) => {

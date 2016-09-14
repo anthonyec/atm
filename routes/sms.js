@@ -66,7 +66,7 @@ router.post('/', (req, res) => {
     //  given number
     const spam = values[0];
     if (spam) {
-      //  too many request, send
+      //  too many request, send spam notification
       return res.render('sms/spam', { layout: false });
     }
 

@@ -1,5 +1,4 @@
 const express = require('express');
-const twilio = require('twilio');
 const moment = require('moment-timezone');
 
 const requestManager = require('../utils/request_manager');
@@ -9,10 +8,6 @@ const isBetweenOpeningHours =
 const isSpam = require('../utils/spam');
 
 const router  = express.Router();
-const client = twilio(
-  process.env.TWILIO_SID || '123', // add some fake number if env not set
-  process.env.TWILIO_TOKEN || '123' // add some fake number if env not set
-);
 
 router.get('/', (req, res) => {
   res.render('pages/sms', {

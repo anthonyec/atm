@@ -1,6 +1,6 @@
 const co = require('co');
-const { sample } = require('lodash');
 const twilio = require('twilio');
+const { sample } = require('lodash');
 
 const requestManager = require('./utils/request_manager');
 const generatePrediction = require('./predictions/generate_prediction.js');
@@ -9,6 +9,14 @@ const Receipt = require('./models/receipt');
 const Prediction = require('./models/prediction');
 const Request = require('./models/request');
 const isSmsOnlyMode = require('./utils/sms_only_mode.js');
+
+const MAX_ATTEMPTS = 3;
+const client = twilio(
+  process.env.TWILIO_SID || '',
+  process.env.TWILIO_TOKEN || ''
+);
+
+var previousRobotId = null;
 
 function sendPredictionInSms(phoneNumber, prediction) {
   if (!phoneNumber || !prediction) {
@@ -28,10 +36,6 @@ function sendPredictionInSms(phoneNumber, prediction) {
     console.log(message.sid);
   });
 }
-
-const MAX_ATTEMPTS = 3;
-
-var previousRobotId = null;
 
 requestManager.events.on('created', (requestModel) => {
   co(function* () {
@@ -93,13 +97,24 @@ requestManager.events.on('created', (requestModel) => {
 
       var attempts = requestModel.get('attempts');
 
-      // if (requestModel.robotId === previousRobotId) {
-      //   console.log('[APP] same robot, retry');
-      //   requestManager.events.emit('created', requestModel);
-      // }
+      if (requestModel.robotId === previousRobotId) {
+        console.log('[APP] same robot, retry');
+        requestManager.events.emit('created', requestModel);
+      }
 
       if (attempts >= MAX_ATTEMPTS) {
-        console.log('[APP] tried everything but failed message');
+        console.log('[APP] max attempts reached, sending back sad error SMS');
+
+        client.messages.create({
+          to: requestModel.get('phoneNumber'),
+          from: process.env.TWILIO_PHONE_NUMBER || '123',
+          body: 'The Robotic Oracle is having some unforeseen problems right now. Please try again later',
+        }, function(err, message) {
+          if (err) {
+            console.log('[SMS] error sending message', err);
+          }
+        });
+
         return false;
       }
 

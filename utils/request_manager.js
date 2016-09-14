@@ -11,6 +11,7 @@ function RequestManager() {
   // Public methods
   return({
     createNewRequest,
+    getRandomRobot,
     events,
   });
 
@@ -23,7 +24,10 @@ function RequestManager() {
 
   function fetchRobots() {
     //  make sure to fetch only available robots
-    return Robot.forge().where('isAvailable', 1).fetchAll();
+    return Robot.forge()
+      .where('isAvailable', 1)
+      .where('isConnected', 1)
+      .fetchAll();
   }
 
   function getRandomRobot(rejectQuery) {
@@ -75,7 +79,11 @@ function RequestManager() {
 
       return getRandomRobot(rejectQuery).then((robot) => {
         const robotId = robot.id;
-        const request = new Request(Object.assign({}, options, { robotId }));
+        const attempts = 0;
+        const request = new Request(Object.assign({}, options, {
+          robotId,
+          attempts,
+        }));
 
         request.save().then(() => {
           events.emit('created', request);

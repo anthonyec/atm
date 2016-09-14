@@ -11,6 +11,7 @@ function RequestManager() {
   // Public methods
   return({
     createNewRequest,
+    getRandomRobot,
     events,
   });
 
@@ -75,7 +76,11 @@ function RequestManager() {
 
       return getRandomRobot(rejectQuery).then((robot) => {
         const robotId = robot.id;
-        const request = new Request(Object.assign({}, options, { robotId }));
+        const attempts = 0;
+        const request = new Request(Object.assign({}, options, {
+          robotId,
+          attempts,
+        }));
 
         request.save().then(() => {
           events.emit('created', request);

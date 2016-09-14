@@ -19,19 +19,23 @@ var Robot = Bookshelf.Model.extend({
 
   // Instance methods
   requestReceiptPrint(receiptId) {
-    const deviceId = this.get('deviceId');
-    const url = process.env.TCP_URL || '';
-    const port = process.env.TCP_PORT || '';
-    const argument = `${url};${port};${receiptId}`;
+    return new Promise((resolve, reject) => {
+      const deviceId = this.get('deviceId');
+      const url = process.env.TCP_URL || '';
+      const port = process.env.TCP_PORT || '';
+      const argument = `${url};${port};${receiptId}`;
 
-    console.log('[APP]', argument);
-    console.log('calling particle.callFunction deviceId', deviceId);
+      console.log('[APP]', argument);
+      console.log('calling particle.callFunction deviceId', deviceId);
 
-    return particle.callFunction({
-      deviceId: deviceId,
-      name: 'printData',
-      argument: argument,
-      auth: token,
+      return particle.callFunction({
+        deviceId: deviceId,
+        name: 'printData',
+        argument: argument,
+        auth: token,
+      }).then(resolve, reject).catch((err) => {
+        reject(err);
+      });
     });
   },
 });

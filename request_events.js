@@ -29,6 +29,8 @@ function sendPredictionInSms(phoneNumber, prediction) {
   });
 }
 
+const MAX_ATTEMPTS = 3;
+
 requestManager.events.on('created', (requestModel) => {
   co(function* () {
     try {
@@ -36,7 +38,6 @@ requestManager.events.on('created', (requestModel) => {
       const request = yield requestModel.load(['robot']);
       const robot = request.related('robot');
       const postcode = request.get('postcode');
-
 
       // Extra data past to the generatePrediction function
       const data = {
@@ -69,12 +70,11 @@ requestManager.events.on('created', (requestModel) => {
       }
 
       const receiptModel = yield receipt.save();
+      const receiptId = receiptModel.get('id');
 
-      robot.requestReceiptPrint(receiptModel.get('id')).then(() => {
+      yield robot.requestReceiptPrint(receiptId).then(() => {
         request.setStatusComplete();
         request.save();
-      }).catch((err) => {
-        throw new Error(err);
       });
 
       console.log('[APP] receipt generated', receiptModel.get('id'));
@@ -82,7 +82,28 @@ requestManager.events.on('created', (requestModel) => {
       // do something here if requestReceiptPrint returns a error
       // maybe chose another robot to print from?
     } catch(err) {
-      console.log(err.toString());
+      console.log('[APP]', err.toString());
+
+      var attempts = requestModel.get('attempts');
+
+      if (attempts >= MAX_ATTEMPTS) {
+        console.log('[APP] tried everything but failed message');
+        return false;
+      }
+
+      requestManager.getRandomRobot().then((robot) => {
+        console.log('[APP] retrying with', robot.name);
+
+        requestModel.set('robotId', robot.id);
+        requestModel.set('attempts', attempts+=1);
+
+        requestModel.save().then((model) => {
+          requestManager.events.emit('created', model);
+        });
+      }).catch((err) => {
+        console.log('err',err);
+      })
+
     }
   });
 });

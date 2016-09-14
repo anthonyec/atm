@@ -2,26 +2,26 @@ const robots = [
   {
     id: 1,
     name: 'astrologer',
-    deviceId: '32003d000747343339373536',
-    photonName: 'blue',
+    deviceId: '410031000a51353335323536',
+    photonName: 'yellow',
   },
   {
     id: 2,
     name: 'crime',
-    deviceId: '3e0035000347343339373536',
-    photonName: 'red',
+    deviceId: '32003d000747343339373536',
+    photonName: 'blue',
   },
   {
     id: 3,
     name: 'banker',
-    deviceId: '44002a001147343339383037',
-    photonName: 'green',
+    deviceId: '3e0035000347343339373536',
+    photonName: 'red',
   },
   {
     id: 4,
     name: 'doctor',
-    deviceId: '410031000a51353335323536',
-    photonName: 'yellow',
+    deviceId: '44002a001147343339383037',
+    photonName: 'green',
   },
 ];
 

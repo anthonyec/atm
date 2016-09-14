@@ -113,7 +113,7 @@ function generatePrediction(postcode, options, headerFooterData) {
 
     predictionTmpFilePromise
       .then((predictionTmp) => {
-        //  2a) load data from api
+        //  2a) load data from data api
         fetchApisData(postcode, endpoints)
           .then((apiData) => {
 

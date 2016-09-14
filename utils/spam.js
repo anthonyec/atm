@@ -48,9 +48,6 @@ function getCountForLastHour(phoneNumber) {
 }
 
 function isSpam(phoneNumber) {
-  //  make sure we're using the same timezone as mysql
-  //  moment.tz.setDefault('Europe/London');
-
   return new Promise((resolve, reject) => {
 
     //  if spam filter not enabled, just return true

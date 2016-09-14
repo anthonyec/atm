@@ -60,6 +60,22 @@ Manually testing posting the message
 $ curl -X POST http://localhost:4000/sms -d "Body=n79bu&From=122"
 ```
 
+### See log files of running app
+```
+$ forever list
+```
+
+shows log file being used by the currently running application in logfile colum
+e.g (/root/.forever/D9ap.log)
+```
+$ cd /root/.forever/
+```
+
+```
+` tail D9ap.log
+```
+
+
 
 ## Misc info
 ### Printer Specs

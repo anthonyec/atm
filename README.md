@@ -25,6 +25,34 @@ Production is hosted on DigitalOcean
 $ ssh root@139.59.173.196
 ```
 
+
+### Starting app on Digital ocean
+
+Using https://github.com/foreverjs/forever to run node app in the background.
+
+To start the app
+
+1. SSH into the root
+```
+$ ssh root@139.59.173.196
+```
+
+2. Go into the atm folder
+```
+$ cd atm
+```
+
+3. Start the app
+```
+$ forever start app.js
+```
+
+Optionally to stop the app
+```
+$ forever stop app.js
+```
+
+
 ## Misc info
 ### Printer Specs
 - 32 characters per line
@@ -34,3 +62,4 @@ $ ssh root@139.59.173.196
 SSID: ATM_2.4G
 
 PASS: c0pb0trulez
+

@@ -37,6 +37,27 @@ Handlebars.registerHelper('size', function(size, options) {
   return startByte + options.fn(this) + '\x14';
 });
 
+Handlebars.registerHelper('img', function(img, options) {
+  /*
+    Images:
+    eyes        hex: \x17  dec: 23
+    happy       hex: \x18  dec: 24
+    sad         hex: \x19  dec: 25
+    confused    hex: \x1a  dec: 26
+    shocked     hex: \x1b  dec: 27
+  */
+
+  const bytesMap = {
+    'eyes': '\x17',
+    'happy': '\x18',
+    'sad': '\x19',
+    'confused': '\x1a',
+    'shocked': '\x1b',
+  }
+
+  return bytesMap[img];
+});
+
 module.exports = function(text, width) {
   const template = Handlebars.compile(text);
   const wrapped = wrap(template(), {

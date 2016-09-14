@@ -23,4 +23,8 @@ module.exports = function registerHelpers(Handlebars) {
   Handlebars.registerHelper('size', function(size, options) {
     return `{{#size "${size}"}}` + options.fn(this) + '{{/size}}';
   });
+
+  Handlebars.registerHelper('img', function(img, options) {
+    return `{{#img "${img}"}}{{/img}}`;
+  });
 }

@@ -31,6 +31,8 @@ function sendPredictionInSms(phoneNumber, prediction) {
 
 const MAX_ATTEMPTS = 3;
 
+var previousRobotId = null;
+
 requestManager.events.on('created', (requestModel) => {
   co(function* () {
     try {
@@ -84,7 +86,17 @@ requestManager.events.on('created', (requestModel) => {
     } catch(err) {
       console.log('[APP]', err.toString());
 
+      // If the request fails in any way, the requestModel will get rerouted
+      // through the function above again 3 more times until it gives up.
+      // To pass it through the function we manually call the "created" event
+      // on the requestManager and pass it the same model. Cheeky but yeah....
+
       var attempts = requestModel.get('attempts');
+
+      // if (requestModel.robotId === previousRobotId) {
+      //   console.log('[APP] same robot, retry');
+      //   requestManager.events.emit('created', requestModel);
+      // }
 
       if (attempts >= MAX_ATTEMPTS) {
         console.log('[APP] tried everything but failed message');

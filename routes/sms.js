@@ -66,10 +66,11 @@ router.post('/', (req, res) => {
     //  check if the spam filter worked out that there are too many request from
     //  given number
     const spam = values[0];
-    // if (spam) {
-    //   //  too many request, send spam notification
-    //   return res.render('sms/spam', { layout: false });
-    // }
+
+    if (spam) {
+      //  too many request, send spam notification
+      return res.render('sms/spam', { layout: false });
+    }
 
     const isFullPostcode = values[1];
 

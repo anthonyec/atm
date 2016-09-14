@@ -49,12 +49,19 @@ function RequestManager() {
 
         // Return an array of robots that don't use the ids from the latest
         // request or the latest request by specific query
-        const suitableRobots = _.reject(robots, (robot) => {
+        let suitableRobots = _.reject(robots, (robot) => {
           return robot.id === lastRobotId || robot.id === lastQueryRobotId;
         });
 
+        // double check that we have any suitable robots
+        if (suitableRobots.length === 0) {
+          //  no suitable robots found, just pick one at random
+          suitableRobots = robots;
+        }
+
         // Randomly return a robot from the suitable candidates
         const randomRobot = _.sample(suitableRobots);
+
         resolve(randomRobot);
       }).catch(reject);
     });

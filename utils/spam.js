@@ -63,11 +63,13 @@ function isSpam(phoneNumber) {
         const lastMinuteCount = (values && values.length) ? values[0]: 0;
         const lastHourCount = (values && values.length) ? values[1]: 0;
 
-        console.log(`SPAM check, lastMinute ${lastMinuteCount}, lastHour: ${lastHourCount}, MAX_PER_MINUTE: ${MAX_PER_MINUTE}, MAX_PER_HOUR: ${MAX_PER_HOUR}`);
+        console.log(`SPAM check, phoneNumber: ${phoneNumber}, lastMinute ${lastMinuteCount}, lastHour: ${lastHourCount}, MAX_PER_MINUTE: ${MAX_PER_MINUTE}, MAX_PER_HOUR: ${MAX_PER_HOUR}`);
 
         //  do we have more request then allowed?
         const isSpam = (lastMinuteCount > MAX_PER_MINUTE) ||
           (lastHourCount > MAX_PER_HOUR);
+
+        console.log('isSpam', isSpam);
 
         return resolve(isSpam);
       })

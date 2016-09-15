@@ -6,6 +6,7 @@ const postcode = require('../utils/postcode');
 const isBetweenOpeningHours =
   require('../utils/opening_hours').isBetweenOpeningHours;
 const isSpam = require('../utils/spam');
+const isBusy = require('../utils/busy');
 
 const router  = express.Router();
 
@@ -47,6 +48,9 @@ router.post('/', (req, res) => {
   const code = postcode(body);
 
   Promise.all([
+    // Check if we don't have too much traffic in general
+    isBusy(),
+
     // Check if we don't have too many requests
     isSpam(from),
 
@@ -58,21 +62,28 @@ router.post('/', (req, res) => {
     code.autocomplete()
 
   ]).then((values) => {
+    //  check if is busy
+    const busy = values[0];
+    if (busy) {
+      //  too many requests in general
+      return res.render('sms/busy', { layout: false });
+    }
+
     //  check if the spam filter worked out that there are too many request from
     //  given number
-    const spam = values[0];
+    const spam = values[1];
 
     if (spam) {
-      //  too many request, send spam notification
+      //  too many request from given number, send spam notification
       return res.render('sms/spam', { layout: false });
     }
 
-    const isFullPostcode = values[1];
+    const isFullPostcode = values[2];
 
     // Check if autocompleted returned a list of possible postcodes.
     // Also check if postcode is bigger than 3, otherwise a SMS like "S" would
     // return all postcodes starting with "S" and would be valid
-    const isPartialPostcode = values[2] && body.length > 3;
+    const isPartialPostcode = values[3] && body.length > 3;
 
     if (isFullPostcode || isPartialPostcode) {
       // Add a new request to the database

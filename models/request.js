@@ -44,6 +44,12 @@ var Request = Bookshelf.Model.extend({
       .where({ phoneNumber: phoneNumber })
       .where('created_at', '>', date)
       .count();
+  },
+
+  getAllAfterTime(date) {
+    return this.forge()
+      .where('created_at', '>', date)
+      .count();
   }
 
 

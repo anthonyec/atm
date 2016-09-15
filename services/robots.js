@@ -14,6 +14,10 @@ function robots() {
   var timeout = null;
 
   function setMonitorTimeout() {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+
     timeout = setTimeout(() => {
       monitor();
     }, 30000);

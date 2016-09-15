@@ -13,6 +13,12 @@ function robots() {
 
   var timeout = null;
 
+  function setMonitorTimeout() {
+    timeout = setTimeout(() => {
+      monitor();
+    }, 30000);
+  }
+
   function monitor() {
     particle.listDevices({ auth: token }).then((response) => {
       const photons = response.body;
@@ -26,11 +32,12 @@ function robots() {
         });
       });
 
-      timeout = setTimeout(() => {
-        monitor();
-      }, 30000);
+      console.log('[APP] device list', response.statusCode);
+
+      setMonitorTimeout();
     }, (err) => {
-      console.log(err);
+      console.log(err.toString());
+      setMonitorTimeout();
     });
   }
 }

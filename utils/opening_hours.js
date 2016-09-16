@@ -7,7 +7,7 @@ const moment = require('moment');
 const START_DATE = moment('2016-09-13');
 const PUBLIC_START_DATE = moment('2016-09-16');
 const END_DATE = moment('2016-09-20');
-const START_HOUR = 10;
+const START_HOUR = 9;
 const END_HOUR = 18;
 
 function isCorrectDate(momentDate) {

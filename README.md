@@ -28,6 +28,34 @@ https://docs.particle.io/guide/getting-started/modes/core/
 ### Setup WiFi via USB
 Please note, the particle **can't** connect to 5GHz networks and only supports 2.4GHz
 
+
+### Connecting to photos from terminal
+
+1.  In case you don't have particle-cli, install it by running:
+
+```sh
+npm install -g particle-cli
+```
+
+2.  Then login
+
+```sh
+$ particle cloud login
+```
+
+3. To list all devices, and see their offline/online status
+
+```sh
+$ particle list
+```
+
+4. To print a random message from printer
+
+```sh
+$ particle call blue printText 'WOW'
+```
+
+
 ## Production
 ### Enviroment Variables
 Fill out and add these to `~/.bshrc`. Run `. ~/.bashrc` to reload the vars for the current shell.
@@ -114,4 +142,3 @@ $ cd /root/.forever/
 SSID: ATM_2.4G
 
 PASS: c0pb0trulez
-

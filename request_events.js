@@ -118,7 +118,7 @@ requestManager.events.on('created', (requestModel) => {
         return false;
       }
 
-      requestManager.getRandomRobot().then((robot) => {
+      requestManager.getNextRobot().then((robot) => {
         console.log('[APP] retrying with', robot.name);
 
         requestModel.set('robotId', robot.id);

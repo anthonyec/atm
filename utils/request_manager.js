@@ -12,6 +12,7 @@ function RequestManager() {
   return({
     createNewRequest,
     getRandomRobot,
+    getNextRobot,
     events,
   });
 
@@ -28,6 +29,29 @@ function RequestManager() {
       .where('isAvailable', 1)
       .where('isConnected', 1)
       .fetchAll();
+  }
+
+  function getNextRobot() {
+    return new Promise((resolve, reject) => {
+      Promise.all([
+        fetchRobots(),
+        fetchLatestRequest(),
+      ]).then((values) => {
+        const robots = values[0].toJSON();
+        const hasLastRobot = values[1] !== null;
+        const lastRobotId = hasLastRobot ? values[1].get('robotId') : null;
+
+        const lastRobotIndex = robots.findIndex((robot) => {
+          return robot.id === lastRobotId;
+        });
+
+        let nextRobotIndex = lastRobotIndex === robots.length - 1 ?
+          0 :
+          lastRobotIndex + 1;
+
+        resolve(robots[nextRobotIndex]);
+      }).catch(reject);
+    });
   }
 
   function getRandomRobot(rejectQuery) {
@@ -73,11 +97,7 @@ function RequestManager() {
 
   function createNewRequest(options) {
     return new Promise((resolve, reject) => {
-      const rejectQuery = {
-        phoneNumber: options.phoneNumber,
-      };
-
-      return getRandomRobot(rejectQuery).then((robot) => {
+      return getNextRobot().then((robot) => {
         const robotId = robot.id;
         const attempts = 0;
         const request = new Request(Object.assign({}, options, {
